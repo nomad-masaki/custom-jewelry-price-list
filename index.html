@@ -1,0 +1,188 @@
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>アクセサリー価格計算</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <div class="header">
+          <div>
+            <div class="title">アクセサリー価格計算</div>
+            <div class="sub">本体 / バチカン / チェーン / ストーン を選ぶと価格が表示されます</div>
+          </div>
+          <button class="btn secondary" onclick="location.reload()">リセット</button>
+        </div>
+
+        <div class="grid">
+          <div>
+            <div class="preview">
+              <div class="key-info">
+                <div class="sub">選択中のキー</div>
+                <div class="badgeWrap" id="badges"></div>
+              </div>
+              
+              <!-- アクセサリーの視覚化 -->
+              <div class="accessory-visualization">
+                <div class="accessory-container">
+                  <!-- チェーン -->
+                  <div class="chain"></div>
+                  
+                  <!-- バチカン -->
+                  <div class="bail">
+                    <!-- バチカンの石配置箇所 1-6 -->
+                    <div class="bail-stones">
+                      <div class="stone-placeholder" id="stone_1" data-position="1"></div>
+                      <div class="stone-placeholder" id="stone_2" data-position="2"></div>
+                      <div class="stone-placeholder" id="stone_3" data-position="3"></div>
+                      <div class="stone-placeholder" id="stone_4" data-position="4"></div>
+                      <div class="stone-placeholder" id="stone_5" data-position="5"></div>
+                      <div class="stone-placeholder" id="stone_6" data-position="6"></div>
+                    </div>
+                  </div>
+                  
+                  <!-- 本体 -->
+                  <div class="pendant-body">
+                    <!-- 本体中央の石配置箇所 a-d -->
+                    <div class="center-stones">
+                      <div class="stone-placeholder" id="stone_a" data-position="a"></div>
+                      <div class="stone-placeholder" id="stone_b" data-position="b"></div>
+                      <div class="stone-placeholder" id="stone_c" data-position="c"></div>
+                      <div class="stone-placeholder" id="stone_d" data-position="d"></div>
+                    </div>
+                    
+                    <!-- 本体外輪の石配置箇所 A-T -->
+                    <div class="outer-ring-stones">
+                      <div class="stone-placeholder" id="stone_A" data-position="A"></div>
+                      <div class="stone-placeholder" id="stone_B" data-position="B"></div>
+                      <div class="stone-placeholder" id="stone_C" data-position="C"></div>
+                      <div class="stone-placeholder" id="stone_D" data-position="D"></div>
+                      <div class="stone-placeholder" id="stone_E" data-position="E"></div>
+                      <div class="stone-placeholder" id="stone_F" data-position="F"></div>
+                      <div class="stone-placeholder" id="stone_G" data-position="G"></div>
+                      <div class="stone-placeholder" id="stone_H" data-position="H"></div>
+                      <div class="stone-placeholder" id="stone_I" data-position="I"></div>
+                      <div class="stone-placeholder" id="stone_J" data-position="J"></div>
+                      <div class="stone-placeholder" id="stone_K" data-position="K"></div>
+                      <div class="stone-placeholder" id="stone_L" data-position="L"></div>
+                      <div class="stone-placeholder" id="stone_M" data-position="M"></div>
+                      <div class="stone-placeholder" id="stone_N" data-position="N"></div>
+                      <div class="stone-placeholder" id="stone_O" data-position="O"></div>
+                      <div class="stone-placeholder" id="stone_P" data-position="P"></div>
+                      <div class="stone-placeholder" id="stone_Q" data-position="Q"></div>
+                      <div class="stone-placeholder" id="stone_R" data-position="R"></div>
+                      <div class="stone-placeholder" id="stone_S" data-position="S"></div>
+                      <div class="stone-placeholder" id="stone_T" data-position="T"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="priceBox">
+              <div class="row"><span class="label">SKU</span><span class="value mono" id="skuText">-</span></div>
+              <div class="row"><span class="label">上代（税抜き）</span><span class="value big" id="priceText">パーツを選択すると金額が表示されます</span></div>
+              <div class="row" style="display: none;"><span class="label">内税（10%）</span><span class="value" id="taxText">-</span></div>
+            </div>
+          </div>
+
+          <div class="controls">
+            <div class="field">
+              <label for="bodySel">本体（1〜8）</label>
+              <select id="bodySel"></select>
+            </div>
+            <div class="field">
+              <label for="bailSel">バチカン（1〜8）</label>
+              <select id="bailSel"></select>
+            </div>
+            <div class="field">
+              <label for="chainSel">チェーン（1〜8）</label>
+              <select id="chainSel"></select>
+            </div>
+            <div class="field">
+              <label for="stoneSel">ストーン（A〜C）</label>
+              <select id="stoneSel"></select>
+            </div>
+            
+            <!-- 個別石設定セクション -->
+            <div id="individualStoneSection" class="individual-stone-section" style="display: none;">
+              <div class="section-header">
+                <h3>個別石設定</h3>
+                <div class="group-settings">
+                  <label class="toggle-label">
+                    <input type="checkbox" id="groupToggleAT" />
+                    <span class="toggle-text">たてがみ グループ設定</span>
+                  </label>
+                  <label class="toggle-label">
+                    <input type="checkbox" id="groupToggleAd" />
+                    <span class="toggle-text">目 ＆ 牙 グループ設定</span>
+                  </label>
+                  <label class="toggle-label">
+                    <input type="checkbox" id="groupToggle16" />
+                    <span class="toggle-text">バチカン グループ設定</span>
+                  </label>
+                </div>
+              </div>
+              
+              <div class="stone-groups">
+                <!-- A〜T グループ -->
+                <div class="stone-group">
+                  <h4>たてがみ（A〜T）</h4>
+                  <div class="group-controls" id="groupControlAT">
+                    <select id="groupStoneAT" class="group-select">
+                      <option value="">選択してください</option>
+                    </select>
+                  </div>
+                  <div class="individual-controls" id="individualControlAT">
+                    <div class="stone-grid">
+                      <!-- A〜Tの個別設定 -->
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- a〜d グループ -->
+                <div class="stone-group">
+                  <h4>目 ＆ 牙（a〜d）</h4>
+                  <div class="group-controls" id="groupControlAd">
+                    <select id="groupStoneAd" class="group-select">
+                      <option value="">選択してください</option>
+                    </select>
+                  </div>
+                  <div class="individual-controls" id="individualControlAd">
+                    <div class="stone-grid">
+                      <!-- a〜dの個別設定 -->
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- 1〜6 グループ -->
+                <div class="stone-group">
+                  <h4>バチカン（1〜6）</h4>
+                  <div class="group-controls" id="groupControl16">
+                    <select id="groupStone16" class="group-select">
+                      <option value="">選択してください</option>
+                    </select>
+                  </div>
+                  <div class="individual-controls" id="individualControl16">
+                    <div class="stone-grid">
+                      <!-- 1〜6の個別設定 -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="javascript/master/price_table.js"></script>
+    <script src="javascript/master/master_materials.js"></script>
+    <script src="javascript/master/master_stones.js"></script>
+    <script src="javascript/master/master_positions.js"></script>
+    <script src="javascript/app.js"></script>
+  </body>
+</html>

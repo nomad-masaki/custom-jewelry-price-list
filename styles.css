@@ -1,0 +1,454 @@
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+:root {
+  --bg: #f7f7f8;
+  --card: #ffffff;
+  --border: #e6e6ea;
+  --text: #1d1d20;
+  --muted: #6b7280;
+  --radius: 16px;
+  --shadow: 0 10px 24px rgba(0,0,0,.08);
+}
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Hiragino Kaku Gothic ProN","Yu Gothic UI", Meiryo, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+.container {
+  max-width: 980px;
+  margin: 32px auto;
+  padding: 0 16px;
+}
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.title {
+  font-size: clamp(18px, 2.4vw, 24px);
+  font-weight: 800;
+}
+.sub { color: var(--muted); font-size: 13px; }
+.grid {
+  display: grid;
+  grid-template-columns: 1.1fr .9fr;
+  gap: 16px;
+}
+@media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+.preview {
+  border: 1px dashed var(--border);
+  border-radius: 14px;
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+}
+.key-info {
+  margin-left: 5px;
+  align-items: left;
+}
+.controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+@media (max-width: 520px){ .controls { grid-template-columns: 1fr; } }
+.field { display: flex; flex-direction: column; gap: 6px; }
+label { font-size: 13px; color: #333; }
+select {
+  appearance: none;
+  padding: 11px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #fff;
+  font-size: 14px;
+}
+.priceBox {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 14px;
+  background: #fafafa;
+  border: 1px dashed var(--border);
+}
+.row { display: flex; justify-content: space-between; align-items: center; margin: 6px 0; }
+.row .label { color: var(--muted); font-size: 13px; }
+.row .value { font-weight: 800; }
+.big { 
+  font-size: clamp(14px, 2.5vw, 18px); 
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.btn {
+  border: none;
+  border-radius: 12px;
+  padding: 10px 14px;
+  background: #111;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 700;
+}
+.btn.secondary { background: #f1f1f1; color: #111; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.badgeWrap { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.badge { background:#111; color:#fff; font-size:11px; padding:4px 8px; border-radius: 999px; opacity:.9; }
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+
+/* 個別石設定のスタイル */
+.individual-stone-section {
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: #fafafa;
+}
+
+.section-header {
+  margin-bottom: 20px;
+}
+
+.section-header h3 {
+  margin: 0 0 12px 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.group-settings {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.toggle-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #111;
+}
+
+.toggle-text {
+  font-weight: 500;
+}
+
+.stone-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.stone-group {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  background: #fff;
+}
+
+.stone-group h4 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.group-controls {
+  margin-bottom: 12px;
+}
+
+.group-select {
+  width: 100%;
+  appearance: none;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  font-size: 13px;
+}
+
+.stone-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+}
+
+.stone-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stone-item label {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.stone-item select {
+  appearance: none;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+  font-size: 12px;
+}
+
+/* グループ設定が有効な時の個別設定の無効化 */
+.stone-group.group-mode .individual-controls {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .group-settings {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .stone-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .stone-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* アクセサリー視覚化のスタイル */
+.accessory-visualization {
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: #fff;
+  min-height: 400px;
+}
+
+.accessory-container {
+  position: relative;
+  width: 300px;
+  height: 350px;
+  margin: 0 auto;
+}
+
+/* チェーン */
+.chain {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 60px;
+  background: linear-gradient(to bottom, #c0c0c0, #e0e0e0);
+  border-radius: 2px;
+  z-index: 1;
+}
+
+/* バチカン */
+.bail {
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 40px;
+  background: linear-gradient(to bottom, #c0c0c0, #e0e0e0);
+  border-radius: 8px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bail-stones {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: center;
+}
+
+/* 本体 */
+.pendant-body {
+  position: absolute;
+  top: 120px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, #f0f0f0, #d0d0d0);
+  border-radius: 50%;
+  border: 3px solid #c0c0c0;
+  z-index: 3;
+  position: relative;
+}
+
+/* 本体中央の石 */
+.center-stones {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 8px;
+}
+
+/* 本体外輪の石 */
+.outer-ring-stones {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* 石のプレースホルダー */
+.stone-placeholder {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ddd;
+  border: 2px solid #bbb;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.stone-placeholder:hover {
+  transform: scale(1.2);
+  border-color: #999;
+}
+
+/* 石画像の表示 */
+.stone-placeholder img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* バチカンの石配置 */
+.bail .stone-placeholder {
+  width: 8px;
+  height: 8px;
+  position: relative;
+  top: 0;
+  left: 0;
+  transform: none;
+}
+
+/* 本体中央の石配置 */
+.center-stones .stone-placeholder {
+  width: 16px;
+  height: 16px;
+  position: relative;
+  top: 0;
+  left: 0;
+  transform: none;
+}
+
+/* 本体外輪の石配置 */
+.outer-ring-stones .stone-placeholder {
+  width: 14px;
+  height: 14px;
+}
+
+/* 外輪の石の位置設定 */
+#stone_A { top: 10%; left: 50%; transform: translate(-50%, -50%); }
+#stone_B { top: 15%; right: 15%; }
+#stone_C { top: 30%; right: 10%; }
+#stone_D { top: 50%; right: 5%; }
+#stone_E { bottom: 30%; right: 10%; }
+#stone_F { bottom: 15%; right: 15%; }
+#stone_G { bottom: 10%; left: 50%; transform: translate(-50%, 50%); }
+#stone_H { bottom: 15%; left: 15%; }
+#stone_I { bottom: 30%; left: 10%; }
+#stone_J { top: 50%; left: 5%; }
+#stone_K { top: 30%; left: 10%; }
+#stone_L { top: 15%; left: 15%; }
+#stone_M { top: 25%; left: 25%; }
+#stone_N { top: 20%; right: 25%; }
+#stone_O { top: 40%; right: 20%; }
+#stone_P { bottom: 40%; right: 20%; }
+#stone_Q { bottom: 20%; right: 25%; }
+#stone_R { bottom: 25%; left: 25%; }
+#stone_S { bottom: 40%; left: 25%; }
+#stone_T { top: 40%; left: 20%; }
+
+/* 石の種類別スタイル */
+.stone-placeholder[data-stone="CZ"] {
+  background: #ffffff;
+  border-color: #cccccc;
+}
+
+.stone-placeholder[data-stone="RUBY"] {
+  background: #e0115f;
+  border-color: #b80e4a;
+}
+
+.stone-placeholder[data-stone="SAPPHIRE"] {
+  background: #0f52ba;
+  border-color: #0d42a3;
+}
+
+.stone-placeholder[data-stone="EMERALD"] {
+  background: #50c878;
+  border-color: #3ea661;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .accessory-container {
+    width: 250px;
+    height: 300px;
+  }
+  
+  .pendant-body {
+    width: 160px;
+    height: 160px;
+  }
+  
+  .stone-placeholder {
+    width: 10px;
+    height: 10px;
+  }
+  
+  .center-stones .stone-placeholder {
+    width: 12px;
+    height: 12px;
+  }
+  
+  .bail .stone-placeholder {
+    width: 6px;
+    height: 6px;
+  }
+}
