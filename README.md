@@ -1,1 +1,1 @@
-# lionheart-custom-jewelry-price-list
+# custom-jewelry-price-list
