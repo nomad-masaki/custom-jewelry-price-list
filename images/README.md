@@ -25,7 +25,7 @@
 - **layer-4**: 
   - たてがみ: `layer_4_mane_{場所}_{石種}.png` (例: `layer_4_mane_A_ruby.png`)
   - 目: `layer_4_eye_L_{石種}.png`, `layer_4_eye_R_{石種}.png`
-  - 牙: `layer_4_teeth_L_{石種}.png`, `layer_4_teeth_R_{石種}.png`
+  - 牙: `layer_4_tooth_L_{石種}.png`, `layer_4_tooth_R_{石種}.png`
   - バチカン石: `layer_4_bail_{番号}_{石種}.png`
 
 ## 推奨仕様

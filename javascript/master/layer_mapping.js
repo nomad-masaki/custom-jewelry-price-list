@@ -86,8 +86,8 @@ const LAYER_MAPPING = {
   stonesAd: {
     "a": { layer: LAYER_ORDER.LAYER_4, image: "images/layer-4/layer_4_eye_L.png" },
     "b": { layer: LAYER_ORDER.LAYER_4, image: "images/layer-4/layer_4_eye_R.png" },
-    "c": { layer: LAYER_ORDER.LAYER_4, image: "images/layer-4/layer_4_teeth_L.png" },
-    "d": { layer: LAYER_ORDER.LAYER_4, image: "images/layer-4/layer_4_teeth_R.png" }
+    "c": { layer: LAYER_ORDER.LAYER_4, image: "images/layer-4/layer_4_tooth_L.png" },
+    "d": { layer: LAYER_ORDER.LAYER_4, image: "images/layer-4/layer_4_tooth_R.png" }
   },
   
   // layer-4: バチカンの石（1〜6）
@@ -152,8 +152,8 @@ function getActiveLayers(selections) {
         let imageName = '';
         if (letter === 'a') imageName = 'eye_L';
         else if (letter === 'b') imageName = 'eye_R';
-        else if (letter === 'c') imageName = 'teeth_L';
-        else if (letter === 'd') imageName = 'teeth_R';
+        else if (letter === 'c') imageName = 'tooth_L';
+        else if (letter === 'd') imageName = 'tooth_R';
         
         const stoneLayer = {
           ...LAYER_MAPPING.stonesAd[letter],
