@@ -452,3 +452,37 @@ select {
     height: 6px;
   }
 }
+
+/* アクセサリーレイヤー表示のスタイル */
+.accessory-layers-container {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  background: #f8f9fa;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.layer-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: var(--radius);
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 860px) {
+  .accessory-layers-container {
+    height: 250px;
+  }
+}
+
+@media (max-width: 480px) {
+  .accessory-layers-container {
+    height: 200px;
+  }
+}

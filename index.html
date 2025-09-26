@@ -26,60 +26,9 @@
                 <div class="badgeWrap" id="badges"></div>
               </div>
               
-              <!-- アクセサリーの視覚化 -->
-              <div class="accessory-visualization">
-                <div class="accessory-container">
-                  <!-- チェーン -->
-                  <div class="chain"></div>
-                  
-                  <!-- バチカン -->
-                  <div class="bail">
-                    <!-- バチカンの石配置箇所 1-6 -->
-                    <div class="bail-stones">
-                      <div class="stone-placeholder" id="stone_1" data-position="1"></div>
-                      <div class="stone-placeholder" id="stone_2" data-position="2"></div>
-                      <div class="stone-placeholder" id="stone_3" data-position="3"></div>
-                      <div class="stone-placeholder" id="stone_4" data-position="4"></div>
-                      <div class="stone-placeholder" id="stone_5" data-position="5"></div>
-                      <div class="stone-placeholder" id="stone_6" data-position="6"></div>
-                    </div>
-                  </div>
-                  
-                  <!-- 本体 -->
-                  <div class="pendant-body">
-                    <!-- 本体中央の石配置箇所 a-d -->
-                    <div class="center-stones">
-                      <div class="stone-placeholder" id="stone_a" data-position="a"></div>
-                      <div class="stone-placeholder" id="stone_b" data-position="b"></div>
-                      <div class="stone-placeholder" id="stone_c" data-position="c"></div>
-                      <div class="stone-placeholder" id="stone_d" data-position="d"></div>
-                    </div>
-                    
-                    <!-- 本体外輪の石配置箇所 A-T -->
-                    <div class="outer-ring-stones">
-                      <div class="stone-placeholder" id="stone_A" data-position="A"></div>
-                      <div class="stone-placeholder" id="stone_B" data-position="B"></div>
-                      <div class="stone-placeholder" id="stone_C" data-position="C"></div>
-                      <div class="stone-placeholder" id="stone_D" data-position="D"></div>
-                      <div class="stone-placeholder" id="stone_E" data-position="E"></div>
-                      <div class="stone-placeholder" id="stone_F" data-position="F"></div>
-                      <div class="stone-placeholder" id="stone_G" data-position="G"></div>
-                      <div class="stone-placeholder" id="stone_H" data-position="H"></div>
-                      <div class="stone-placeholder" id="stone_I" data-position="I"></div>
-                      <div class="stone-placeholder" id="stone_J" data-position="J"></div>
-                      <div class="stone-placeholder" id="stone_K" data-position="K"></div>
-                      <div class="stone-placeholder" id="stone_L" data-position="L"></div>
-                      <div class="stone-placeholder" id="stone_M" data-position="M"></div>
-                      <div class="stone-placeholder" id="stone_N" data-position="N"></div>
-                      <div class="stone-placeholder" id="stone_O" data-position="O"></div>
-                      <div class="stone-placeholder" id="stone_P" data-position="P"></div>
-                      <div class="stone-placeholder" id="stone_Q" data-position="Q"></div>
-                      <div class="stone-placeholder" id="stone_R" data-position="R"></div>
-                      <div class="stone-placeholder" id="stone_S" data-position="S"></div>
-                      <div class="stone-placeholder" id="stone_T" data-position="T"></div>
-                    </div>
-                  </div>
-                </div>
+              <!-- アクセサリーのレイヤー表示 -->
+              <div class="accessory-layers-container" id="accessoryLayers">
+                <!-- レイヤー画像が動的に追加される -->
               </div>
             </div>
             <div class="priceBox">
@@ -183,6 +132,7 @@
     <script src="javascript/master/master_materials.js"></script>
     <script src="javascript/master/master_stones.js"></script>
     <script src="javascript/master/master_positions.js"></script>
+    <script src="javascript/master/layer_mapping.js"></script>
     <script src="javascript/app.js"></script>
   </body>
 </html>
