@@ -160,16 +160,16 @@ const STONE_POSITION_IMAGES = {
     "EMERALD": "images/layer-4/layer_4_eye_R_emerald.png"
   },
   "c": {
-    "CZ": "images/layer-4/layer_4_teeth_L_cz.png",
-    "RUBY": "images/layer-4/layer_4_teeth_L_ruby.png",
-    "SAPPHIRE": "images/layer-4/layer_4_teeth_L_sapphire.png",
-    "EMERALD": "images/layer-4/layer_4_teeth_L_emerald.png"
+    "CZ": "images/layer-4/layer_4_tooth_L_cz.png",
+    "RUBY": "images/layer-4/layer_4_tooth_L_ruby.png",
+    "SAPPHIRE": "images/layer-4/layer_4_tooth_L_sapphire.png",
+    "EMERALD": "images/layer-4/layer_4_tooth_L_emerald.png"
   },
   "d": {
-    "CZ": "images/layer-4/layer_4_teeth_R_cz.png",
-    "RUBY": "images/layer-4/layer_4_teeth_R_ruby.png",
-    "SAPPHIRE": "images/layer-4/layer_4_teeth_R_sapphire.png",
-    "EMERALD": "images/layer-4/layer_4_teeth_R_emerald.png"
+    "CZ": "images/layer-4/layer_4_tooth_R_cz.png",
+    "RUBY": "images/layer-4/layer_4_tooth_R_ruby.png",
+    "SAPPHIRE": "images/layer-4/layer_4_tooth_R_sapphire.png",
+    "EMERALD": "images/layer-4/layer_4_tooth_R_emerald.png"
   },
   
   // 1〜6 (バチカンの石) の各箇所ごとの石画像
