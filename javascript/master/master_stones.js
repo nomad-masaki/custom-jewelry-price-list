@@ -174,39 +174,39 @@ const STONE_POSITION_IMAGES = {
   
   // 1〜6 (バチカンの石) の各箇所ごとの石画像
   "1": {
-    "CZ": "images/layer-4/layer_4_vatican1_cz.png",
-    "RUBY": "images/layer-4/layer_4_vatican1_ruby.png",
-    "SAPPHIRE": "images/layer-4/layer_4_vatican1_sapphire.png",
-    "EMERALD": "images/layer-4/layer_4_vatican1_emerald.png"
+    "CZ": "images/layer-4/layer_4_bail1_cz.png",
+    "RUBY": "images/layer-4/layer_4_bail1_ruby.png",
+    "SAPPHIRE": "images/layer-4/layer_4_bail1_sapphire.png",
+    "EMERALD": "images/layer-4/layer_4_bail1_emerald.png"
   },
   "2": {
-    "CZ": "images/layer-4/layer_4_vatican2_cz.png",
-    "RUBY": "images/layer-4/layer_4_vatican2_ruby.png",
-    "SAPPHIRE": "images/layer-4/layer_4_vatican2_sapphire.png",
-    "EMERALD": "images/layer-4/layer_4_vatican2_emerald.png"
+    "CZ": "images/layer-4/layer_4_bail2_cz.png",
+    "RUBY": "images/layer-4/layer_4_bail2_ruby.png",
+    "SAPPHIRE": "images/layer-4/layer_4_bail2_sapphire.png",
+    "EMERALD": "images/layer-4/layer_4_bail2_emerald.png"
   },
   "3": {
-    "CZ": "images/layer-4/layer_4_vatican3_cz.png",
-    "RUBY": "images/layer-4/layer_4_vatican3_ruby.png",
-    "SAPPHIRE": "images/layer-4/layer_4_vatican3_sapphire.png",
-    "EMERALD": "images/layer-4/layer_4_vatican3_emerald.png"
+    "CZ": "images/layer-4/layer_4_bail3_cz.png",
+    "RUBY": "images/layer-4/layer_4_bail3_ruby.png",
+    "SAPPHIRE": "images/layer-4/layer_4_bail3_sapphire.png",
+    "EMERALD": "images/layer-4/layer_4_bail3_emerald.png"
   },
   "4": {
-    "CZ": "images/layer-4/layer_4_vatican4_cz.png",
-    "RUBY": "images/layer-4/layer_4_vatican4_ruby.png",
-    "SAPPHIRE": "images/layer-4/layer_4_vatican4_sapphire.png",
-    "EMERALD": "images/layer-4/layer_4_vatican4_emerald.png"
+    "CZ": "images/layer-4/layer_4_bail4_cz.png",
+    "RUBY": "images/layer-4/layer_4_bail4_ruby.png",
+    "SAPPHIRE": "images/layer-4/layer_4_bail4_sapphire.png",
+    "EMERALD": "images/layer-4/layer_4_bail4_emerald.png"
   },
   "5": {
-    "CZ": "images/layer-4/layer_4_vatican5_cz.png",
-    "RUBY": "images/layer-4/layer_4_vatican5_ruby.png",
-    "SAPPHIRE": "images/layer-4/layer_4_vatican5_sapphire.png",
-    "EMERALD": "images/layer-4/layer_4_vatican5_emerald.png"
+    "CZ": "images/layer-4/layer_4_bail5_cz.png",
+    "RUBY": "images/layer-4/layer_4_bail5_ruby.png",
+    "SAPPHIRE": "images/layer-4/layer_4_bail5_sapphire.png",
+    "EMERALD": "images/layer-4/layer_4_bail5_emerald.png"
   },
   "6": {
-    "CZ": "images/layer-4/layer_4_vatican6_cz.png",
-    "RUBY": "images/layer-4/layer_4_vatican6_ruby.png",
-    "SAPPHIRE": "images/layer-4/layer_4_vatican6_sapphire.png",
-    "EMERALD": "images/layer-4/layer_4_vatican6_emerald.png"
+    "CZ": "images/layer-4/layer_4_bail6_cz.png",
+    "RUBY": "images/layer-4/layer_4_bail6_ruby.png",
+    "SAPPHIRE": "images/layer-4/layer_4_bail6_sapphire.png",
+    "EMERALD": "images/layer-4/layer_4_bail6_emerald.png"
   }
 };

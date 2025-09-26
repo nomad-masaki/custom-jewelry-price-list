@@ -47,14 +47,14 @@ const LAYER_MAPPING = {
   
   // layer-2: バチカン
   bails: {
-    "1": { layer: LAYER_ORDER.LAYER_2, image: "images/layer-2/layer_2_vatican_SV925.png" },
-    "2": { layer: LAYER_ORDER.LAYER_2, image: "images/layer-2/layer_2_vatican_K10YG.png" },
-    "3": { layer: LAYER_ORDER.LAYER_2, image: "images/layer-2/layer_2_vatican_K10PG.png" },
-    "4": { layer: LAYER_ORDER.LAYER_2, image: "images/layer-2/layer_2_vatican_K10WG.png" },
-    "5": { layer: LAYER_ORDER.LAYER_2, image: "images/layer-2/layer_2_vatican_K18YG.png" },
-    "6": { layer: LAYER_ORDER.LAYER_2, image: "images/layer-2/layer_2_vatican_K18PG.png" },
-    "7": { layer: LAYER_ORDER.LAYER_2, image: "images/layer-2/layer_2_vatican_K18WG.png" },
-    "8": { layer: LAYER_ORDER.LAYER_2, image: "images/layer-2/layer_2_vatican_Pt900.png" }
+    "1": { layer: LAYER_ORDER.LAYER_2, image: "images/layer-2/layer_2_bail_SV925.png" },
+    "2": { layer: LAYER_ORDER.LAYER_2, image: "images/layer-2/layer_2_bail_K10YG.png" },
+    "3": { layer: LAYER_ORDER.LAYER_2, image: "images/layer-2/layer_2_bail_K10PG.png" },
+    "4": { layer: LAYER_ORDER.LAYER_2, image: "images/layer-2/layer_2_bail_K10WG.png" },
+    "5": { layer: LAYER_ORDER.LAYER_2, image: "images/layer-2/layer_2_bail_K18YG.png" },
+    "6": { layer: LAYER_ORDER.LAYER_2, image: "images/layer-2/layer_2_bail_K18PG.png" },
+    "7": { layer: LAYER_ORDER.LAYER_2, image: "images/layer-2/layer_2_bail_K18WG.png" },
+    "8": { layer: LAYER_ORDER.LAYER_2, image: "images/layer-2/layer_2_bail_Pt900.png" }
   },
   
   // layer-4: 石類（目、牙、たてがみ、バチカン石）
@@ -92,12 +92,12 @@ const LAYER_MAPPING = {
   
   // layer-4: バチカンの石（1〜6）
   stones16: {
-    "1": { layer: LAYER_ORDER.LAYER_4, image: "images/layer-4/layer_4_vatican1.png" },
-    "2": { layer: LAYER_ORDER.LAYER_4, image: "images/layer-4/layer_4_vatican2.png" },
-    "3": { layer: LAYER_ORDER.LAYER_4, image: "images/layer-4/layer_4_vatican3.png" },
-    "4": { layer: LAYER_ORDER.LAYER_4, image: "images/layer-4/layer_4_vatican4.png" },
-    "5": { layer: LAYER_ORDER.LAYER_4, image: "images/layer-4/layer_4_vatican5.png" },
-    "6": { layer: LAYER_ORDER.LAYER_4, image: "images/layer-4/layer_4_vatican6.png" }
+    "1": { layer: LAYER_ORDER.LAYER_4, image: "images/layer-4/layer_4_bail1.png" },
+    "2": { layer: LAYER_ORDER.LAYER_4, image: "images/layer-4/layer_4_bail2.png" },
+    "3": { layer: LAYER_ORDER.LAYER_4, image: "images/layer-4/layer_4_bail3.png" },
+    "4": { layer: LAYER_ORDER.LAYER_4, image: "images/layer-4/layer_4_bail4.png" },
+    "5": { layer: LAYER_ORDER.LAYER_4, image: "images/layer-4/layer_4_bail5.png" },
+    "6": { layer: LAYER_ORDER.LAYER_4, image: "images/layer-4/layer_4_bail6.png" }
   }
 };
 
@@ -171,7 +171,7 @@ function getActiveLayers(selections) {
       if (stoneType && LAYER_MAPPING.stones16[num]) {
         const stoneLayer = {
           ...LAYER_MAPPING.stones16[num],
-          image: `images/layer-4/layer_4_vatican${num}_${stoneType.toLowerCase()}.png`
+          image: `images/layer-4/layer_4_bail${num}_${stoneType.toLowerCase()}.png`
         };
         activeLayers.push(stoneLayer);
       }

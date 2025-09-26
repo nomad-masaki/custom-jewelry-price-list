@@ -20,13 +20,13 @@
 
 ## ファイル命名規則
 - **layer-1**: `layer_1_chain_{素材}.png` (例: `layer_1_chain_SV925.png`)
-- **layer-2**: `layer_2_vatican_{素材}.png` (例: `layer_2_vatican_K18YG.png`)
+- **layer-2**: `layer_2_bail_{素材}.png` (例: `layer_2_bail_K18YG.png`)
 - **layer-3**: `layer_3_body_{素材}.png` (例: `layer_3_body_K10YG.png`)
 - **layer-4**: 
-  - たてがみ: `layer_4_mane_{石種}.png` (例: `layer_4_mane_ruby.png`)
+  - たてがみ: `layer_4_mane_{場所}_{石種}.png` (例: `layer_4_mane_A_ruby.png`)
   - 目: `layer_4_eye_L_{石種}.png`, `layer_4_eye_R_{石種}.png`
   - 牙: `layer_4_teeth_L_{石種}.png`, `layer_4_teeth_R_{石種}.png`
-  - バチカン石: `layer_4_vatican{番号}_{石種}.png`
+  - バチカン石: `layer_4_bail_{番号}_{石種}.png`
 
 ## 推奨仕様
 - サイズ: 800x600px 以上の高解像度
