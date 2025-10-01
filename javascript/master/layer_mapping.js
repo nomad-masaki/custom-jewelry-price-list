@@ -171,7 +171,7 @@ function getActiveLayers(selections) {
       if (stoneType && LAYER_MAPPING.stones16[num]) {
         const stoneLayer = {
           ...LAYER_MAPPING.stones16[num],
-          image: `images/layer-4/layer_4_bail${num}_${stoneType.toLowerCase()}.png`
+          image: `images/layer-4/layer_4_bail_${num}_${stoneType.toLowerCase()}.png`
         };
         activeLayers.push(stoneLayer);
       }

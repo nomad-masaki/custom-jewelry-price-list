@@ -39,25 +39,27 @@
           </div>
 
           <div class="controls">
-            <div class="field">
-              <label for="bodySel">本体（1〜8）</label>
-              <select id="bodySel"></select>
-            </div>
-            <div class="field">
-              <label for="bailSel">バチカン（1〜8）</label>
-              <select id="bailSel"></select>
-            </div>
-            <div class="field">
-              <label for="chainSel">チェーン（1〜8）</label>
-              <select id="chainSel"></select>
-            </div>
-            <div class="field">
-              <label for="stoneSel">ストーン（A〜C）</label>
-              <select id="stoneSel"></select>
+            <div class="main-selection-grid">
+              <div class="field">
+                <label for="bodySel">本体（1〜8）</label>
+                <select id="bodySel"></select>
+              </div>
+              <div class="field">
+                <label for="bailSel">バチカン（1〜8）</label>
+                <select id="bailSel"></select>
+              </div>
+              <div class="field">
+                <label for="chainSel">チェーン（1〜8）</label>
+                <select id="chainSel"></select>
+              </div>
+              <div class="field">
+                <label for="stoneSel">ストーン（A〜C）</label>
+                <select id="stoneSel"></select>
+              </div>
             </div>
             
             <!-- 個別石設定セクション -->
-            <div id="individualStoneSection" class="individual-stone-section" style="display: none;">
+            <div id="individualStoneSection" class="individual-stone-section stone-settings" style="display: none;">
               <div class="section-header">
                 <h3>個別石設定</h3>
                 <div class="group-settings">
@@ -76,48 +78,51 @@
                 </div>
               </div>
               
-              <div class="stone-groups">
-                <!-- A〜T グループ -->
-                <div class="stone-group">
-                  <h4>たてがみ（A〜T）</h4>
-                  <div class="group-controls" id="groupControlAT">
-                    <select id="groupStoneAT" class="group-select">
-                      <option value="">選択してください</option>
-                    </select>
-                  </div>
-                  <div class="individual-controls" id="individualControlAT">
-                    <div class="stone-grid">
-                      <!-- A〜Tの個別設定 -->
+              <div class="stone-groups-layout">
+                <!-- 左列：たてがみ（A〜T） -->
+                <div class="stone-group-left">
+                  <div class="stone-group">
+                    <h4>たてがみ（A〜T）</h4>
+                    <div class="group-controls" id="groupControlAT">
+                      <select id="groupStoneAT" class="group-select">
+                        <option value="">選択してください</option>
+                      </select>
+                    </div>
+                    <div class="individual-controls" id="individualControlAT">
+                      <div class="stone-grid">
+                        <!-- A〜Tの個別設定 -->
+                      </div>
                     </div>
                   </div>
                 </div>
-                
-                <!-- a〜d グループ -->
-                <div class="stone-group">
-                  <h4>目 ＆ 牙（a〜d）</h4>
-                  <div class="group-controls" id="groupControlAd">
-                    <select id="groupStoneAd" class="group-select">
-                      <option value="">選択してください</option>
-                    </select>
-                  </div>
-                  <div class="individual-controls" id="individualControlAd">
-                    <div class="stone-grid">
-                      <!-- a〜dの個別設定 -->
+
+                <!-- 右列：目＆牙（a〜d）とバチカン（1〜6）を縦積み -->
+                <div class="stone-group-right">
+                  <div class="stone-group">
+                    <h4>目 ＆ 牙（a〜d）</h4>
+                    <div class="group-controls" id="groupControlAd">
+                      <select id="groupStoneAd" class="group-select">
+                        <option value="">選択してください</option>
+                      </select>
+                    </div>
+                    <div class="individual-controls" id="individualControlAd">
+                      <div class="stone-grid">
+                        <!-- a〜dの個別設定 -->
+                      </div>
                     </div>
                   </div>
-                </div>
-                
-                <!-- 1〜6 グループ -->
-                <div class="stone-group">
-                  <h4>バチカン（1〜6）</h4>
-                  <div class="group-controls" id="groupControl16">
-                    <select id="groupStone16" class="group-select">
-                      <option value="">選択してください</option>
-                    </select>
-                  </div>
-                  <div class="individual-controls" id="individualControl16">
-                    <div class="stone-grid">
-                      <!-- 1〜6の個別設定 -->
+
+                  <div class="stone-group">
+                    <h4>バチカン（1〜6）</h4>
+                    <div class="group-controls" id="groupControl16">
+                      <select id="groupStone16" class="group-select">
+                        <option value="">選択してください</option>
+                      </select>
+                    </div>
+                    <div class="individual-controls" id="individualControl16">
+                      <div class="stone-grid">
+                        <!-- 1〜6の個別設定 -->
+                      </div>
                     </div>
                   </div>
                 </div>

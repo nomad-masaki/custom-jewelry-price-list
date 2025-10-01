@@ -112,15 +112,31 @@ function updateGroupMode(group, isGroupMode) {
   const groupElement = document.querySelector(`#groupControl${group}`);
   const individualElement = document.querySelector(`#individualControl${group}`);
   const stoneGroup = groupElement.closest('.stone-group');
+  const titleElement = stoneGroup.querySelector('h4');
 
   if (isGroupMode) {
     stoneGroup.classList.add('group-mode');
     groupElement.style.display = 'block';
     individualElement.style.display = 'none';
+    
+    // グループモード時のタイトルを設定
+    if (titleElement) {
+      const groupTitles = {
+        'AT': 'たてがみ',
+        'Ad': '目 ＆ 牙',
+        '16': 'バチカン'
+      };
+      titleElement.setAttribute('data-group-title', groupTitles[group] || titleElement.textContent);
+    }
   } else {
     stoneGroup.classList.remove('group-mode');
     groupElement.style.display = 'none';
     individualElement.style.display = 'block';
+    
+    // 通常モードに戻す
+    if (titleElement) {
+      titleElement.removeAttribute('data-group-title');
+    }
   }
   
   // レイヤー表示を更新
@@ -148,6 +164,7 @@ function setupGroupStoneSelects() {
   });
 
   $('groupStone16').addEventListener('change', (e) => {
+    console.log('バチカングループ石選択が変更されました:', e.target.value);
     individualStoneState.groupStone16 = e.target.value;
     updateIndividualStones();
     updateLayers(); // レイヤー表示を即座に更新
@@ -188,12 +205,31 @@ function setupIndividualStoneSelects() {
     const select = $(`stone16_${num}`);
     if (select) {
       select.addEventListener('change', (e) => {
+        console.log(`バチカン個別石${num}選択が変更されました:`, e.target.value);
         individualStoneState.stones16[num] = e.target.value;
         updateIndividualStones();
         updateLayers(); // レイヤー表示を即座に更新
       });
     }
   });
+}
+
+// 石選択フォームの表示制御
+function updateStoneFormVisibility() {
+  const mainStoneValue = $('stoneSel') ? $('stoneSel').value : '';
+  const stoneForm = document.querySelector('.stone-settings');
+  
+  if (stoneForm) {
+    if (mainStoneValue && mainStoneValue !== 'CZ') {
+      // 天然石が選択されている場合は表示
+      stoneForm.style.display = 'block';
+      console.log('石選択フォームを表示');
+    } else {
+      // CZ選択時または未選択時は非表示
+      stoneForm.style.display = 'none';
+      console.log('石選択フォームを非表示');
+    }
+  }
 }
 
 // 個別石選択のセレクトボックスを更新する関数
@@ -363,6 +399,9 @@ function checkCZRestriction() {
       position: num
     }))
   ];
+  
+  // 石選択フォームの表示制御
+  updateStoneFormVisibility();
   
   // セレクトボックスの選択肢を更新
   updateStoneSelectOptions();
@@ -808,8 +847,16 @@ function init() {
   // 初期表示を更新
   console.log('初期表示を更新中...');
   
+  // グループ設定の初期状態を設定（チェックボックスがオフなのでグループプルダウンを非表示）
+  updateGroupMode('AT', false);
+  updateGroupMode('Ad', false);
+  updateGroupMode('16', false);
+  
   // CZ制限チェックを実行
   checkCZRestriction();
+  
+  // 石選択フォームの表示制御を実行
+  updateStoneFormVisibility();
   
   updateStoneVisualization();
   console.log('updateLayersを呼び出し中...');
@@ -902,6 +949,7 @@ function updateLayers() {
     num16.forEach(num => {
       selections.stones16[num] = individualStoneState.groupStone16;
     });
+    console.log('バチカングループ設定適用:', selections.stones16);
   }
 
   // アクティブなレイヤーを取得
