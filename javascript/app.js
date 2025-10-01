@@ -122,9 +122,9 @@ function updateGroupMode(group, isGroupMode) {
     // グループモード時のタイトルを設定
     if (titleElement) {
       const groupTitles = {
-        'AT': 'たてがみ',
-        'Ad': '目 ＆ 牙',
-        '16': 'バチカン'
+        'AT': 'たてがみグループ',
+        'Ad': '目 ＆ 牙グループ',
+        '16': 'バチカングループ'
       };
       titleElement.setAttribute('data-group-title', groupTitles[group] || titleElement.textContent);
     }

@@ -242,32 +242,26 @@ select {
 /* グループモード時のタイトル表示制御 */
 .stone-group.group-mode h4 {
   position: relative;
-}
-
-.stone-group.group-mode h4::after {
-  content: "";
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 0;
-  height: 0;
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-  border-top: 4px solid var(--muted);
-}
-
-/* グループモード時に記号部分を非表示 */
-.stone-group.group-mode h4 {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+/* グループモード時に元のテキストを非表示 */
+.stone-group.group-mode h4 {
+  font-size: 0; /* 元のテキストを非表示にする */
+}
+
+/* グループモード時のタイトルを表示 */
 .stone-group.group-mode h4::before {
   content: attr(data-group-title);
+  font-size: 14px; /* 元のh4のフォントサイズを復元 */
+  font-weight: 600;
+  color: var(--text);
   display: block;
 }
+
+/* ドロップダウン矢印は表示しない（グループ設定時は展開可能な表現を避ける） */
 
 .group-controls {
   margin-bottom: 12px;
