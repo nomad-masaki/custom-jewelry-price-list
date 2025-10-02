@@ -136,7 +136,7 @@ function updateGroupMode(group, isGroupMode) {
     // 通常モードに戻す
     if (titleElement) {
       titleElement.removeAttribute('data-group-title');
-    }
+  }
   }
   
   // レイヤー表示を更新
@@ -529,7 +529,7 @@ function updateIndividualStones() {
 
   // CZ制限チェック
   checkCZRestriction();
-  
+
   // 石の表示を更新
   updateStoneVisualization();
   
@@ -902,7 +902,258 @@ function init() {
   // ページトップボタンの初期化
   setupPageTopButton();
   
+  // スマホ用スクロール機能の初期化
+  setupMobileScrollPreview();
   console.log('init完了');
+}
+
+// スマホ用スクロール機能
+function setupMobileScrollPreview() {
+  // 複数の方法でpreview要素を取得
+  let preview = document.querySelector('.preview');
+  let priceBox = document.querySelector('.priceBox');
+  
+  console.log('setupMobileScrollPreview関数が呼び出されました');
+  console.log('preview要素:', preview);
+  console.log('priceBox要素:', priceBox);
+  
+  if (!preview) {
+    // 代替方法で要素を取得
+    preview = document.querySelector('.grid > div:first-child');
+    console.log('代替方法でpreview要素を取得:', preview);
+  }
+  
+  if (!priceBox) {
+    // 代替方法でpriceBox要素を取得
+    priceBox = document.querySelector('.priceBox, [class*="price"]');
+    console.log('代替方法でpriceBox要素を取得:', priceBox);
+  }
+  
+  if (!preview) {
+    console.log('preview要素が見つかりません');
+    return;
+  }
+  
+  // 初期状態のスタイルを確認
+  const computedStyle = window.getComputedStyle(preview);
+  console.log('初期状態のpreviewスタイル:', {
+    position: computedStyle.position,
+    top: computedStyle.top,
+    left: computedStyle.left,
+    width: computedStyle.width,
+    height: computedStyle.height,
+    transform: computedStyle.transform
+  });
+  
+  if (priceBox) {
+    const priceBoxStyle = window.getComputedStyle(priceBox);
+    console.log('初期状態のpriceBoxスタイル:', {
+      position: priceBoxStyle.position,
+      top: priceBoxStyle.top,
+      left: priceBoxStyle.left,
+      width: priceBoxStyle.width,
+      height: priceBoxStyle.height,
+      transform: priceBoxStyle.transform
+    });
+  }
+  
+  let isScrolled = false;
+  
+  // スクロールイベントリスナー
+  function handleScroll() {
+    const scrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+    const screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth || 0;
+    
+    console.log(`スクロール位置: ${scrollY}, 画面幅: ${screenWidth}, isScrolled: ${isScrolled}`);
+    
+    // スマホサイズ（480px以下）でのみ動作
+    if (screenWidth <= 480) {
+      console.log('スマホサイズでの処理');
+      if (scrollY > 50 && !isScrolled) {
+        // スクロール時：左上50%表示
+        // Preview要素の処理
+        preview.classList.add('scrolled');
+        preview.style.setProperty('top', '20px', 'important');
+        preview.style.setProperty('left', '8px', 'important');
+        preview.style.setProperty('right', 'auto', 'important');
+        preview.style.setProperty('width', '50%', 'important');
+        preview.style.setProperty('height', '100px', 'important');
+        preview.style.setProperty('transform', 'scale(0.8)', 'important');
+        preview.style.setProperty('border-radius', '8px', 'important');
+        
+        // PriceBox要素の処理
+        if (priceBox) {
+          priceBox.classList.add('scrolled');
+          priceBox.style.setProperty('top', '195px', 'important');
+          priceBox.style.setProperty('left', '8px', 'important');
+          priceBox.style.setProperty('right', 'auto', 'important');
+          priceBox.style.setProperty('width', '50%', 'important');
+          priceBox.style.setProperty('height', 'auto', 'important');
+          priceBox.style.setProperty('transform', 'scale(0.8)', 'important');
+          priceBox.style.setProperty('border-radius', '8px', 'important');
+        }
+        
+        isScrolled = true;
+        console.log('プレビューとpriceBoxを左上50%に縮小表示');
+        console.log('適用されたpreviewスタイル:', {
+          top: preview.style.top,
+          left: preview.style.left,
+          width: preview.style.width,
+          height: preview.style.height,
+          transform: preview.style.transform
+        });
+        if (priceBox) {
+          console.log('適用されたpriceBoxスタイル:', {
+            top: priceBox.style.top,
+            left: priceBox.style.left,
+            width: priceBox.style.width,
+            height: priceBox.style.height,
+            transform: priceBox.style.transform
+          });
+        }
+      } else if (scrollY <= 50 && isScrolled) {
+        // ページトップ時：元の位置とサイズに戻す
+        // Preview要素の処理
+        preview.classList.remove('scrolled');
+        preview.style.removeProperty('top');
+        preview.style.removeProperty('left');
+        preview.style.removeProperty('right');
+        preview.style.removeProperty('width');
+        preview.style.removeProperty('height');
+        preview.style.removeProperty('transform');
+        preview.style.removeProperty('border-radius');
+        
+        // PriceBox要素の処理
+        if (priceBox) {
+          priceBox.classList.remove('scrolled');
+          priceBox.style.removeProperty('top');
+          priceBox.style.removeProperty('left');
+          priceBox.style.removeProperty('right');
+          priceBox.style.removeProperty('width');
+          priceBox.style.removeProperty('height');
+          priceBox.style.removeProperty('transform');
+          priceBox.style.removeProperty('border-radius');
+        }
+        
+        isScrolled = false;
+        console.log('プレビューとpriceBoxを元の位置・サイズに復元');
+      }
+    } else {
+      console.log('スマホ以外のサイズ');
+      // スマホ以外のサイズではクラスを削除
+      if (isScrolled) {
+        preview.classList.remove('scrolled');
+        isScrolled = false;
+      }
+    }
+  }
+  
+  // 複数のスクロールイベントリスナーを追加
+  window.addEventListener('scroll', handleScroll, { passive: true });
+  document.addEventListener('scroll', handleScroll, { passive: true });
+  document.body.addEventListener('scroll', handleScroll, { passive: true });
+  document.documentElement.addEventListener('scroll', handleScroll, { passive: true });
+  
+  // タッチスクロール対応（iOS Safari）
+  window.addEventListener('touchmove', handleScroll, { passive: true });
+  
+  console.log('スクロールイベントリスナーを追加しました');
+  
+  // リサイズイベントリスナーを追加
+  window.addEventListener('resize', () => {
+    const screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth || 0;
+    if (screenWidth > 480 && isScrolled) {
+      preview.classList.remove('scrolled');
+      preview.style.removeProperty('top');
+      preview.style.removeProperty('left');
+      preview.style.removeProperty('right');
+      preview.style.removeProperty('width');
+      preview.style.removeProperty('height');
+      preview.style.removeProperty('transform');
+      preview.style.removeProperty('border-radius');
+      
+      if (priceBox) {
+        priceBox.classList.remove('scrolled');
+        priceBox.style.removeProperty('top');
+        priceBox.style.removeProperty('left');
+        priceBox.style.removeProperty('right');
+        priceBox.style.removeProperty('width');
+        priceBox.style.removeProperty('height');
+        priceBox.style.removeProperty('transform');
+        priceBox.style.removeProperty('border-radius');
+      }
+      
+      isScrolled = false;
+    }
+  });
+  
+  // 初期状態を確認
+  handleScroll();
+  console.log('setupMobileScrollPreview関数の初期化完了');
+  
+  // デバッグ用：定期的にスクロール位置を確認
+  setInterval(() => {
+    const scrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+    const screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth || 0;
+    if (screenWidth <= 480) {
+      console.log(`定期確認 - スクロール位置: ${scrollY}, 画面幅: ${screenWidth}, isScrolled: ${isScrolled}`);
+    }
+  }, 2000);
+  
+  // デバッグ用：グローバル関数として公開
+  window.testScrollPreview = () => {
+    console.log('テスト用：強制的にプレビューとpriceBoxを縮小表示');
+    // Preview要素の処理
+    preview.classList.add('scrolled');
+    preview.style.setProperty('top', '20px', 'important');
+    preview.style.setProperty('left', '8px', 'important');
+    preview.style.setProperty('right', 'auto', 'important');
+    preview.style.setProperty('width', '50%', 'important');
+    preview.style.setProperty('height', '100px', 'important');
+    preview.style.setProperty('transform', 'scale(0.8)', 'important');
+    preview.style.setProperty('border-radius', '8px', 'important');
+    
+    // PriceBox要素の処理
+    if (priceBox) {
+      priceBox.classList.add('scrolled');
+      priceBox.style.setProperty('top', '195px', 'important');
+      priceBox.style.setProperty('left', '8px', 'important');
+      priceBox.style.setProperty('right', 'auto', 'important');
+      priceBox.style.setProperty('width', '50%', 'important');
+      priceBox.style.setProperty('height', 'auto', 'important');
+      priceBox.style.setProperty('transform', 'scale(0.8)', 'important');
+      priceBox.style.setProperty('border-radius', '8px', 'important');
+    }
+    
+    isScrolled = true;
+  };
+  
+  window.resetScrollPreview = () => {
+    console.log('テスト用：プレビューとpriceBoxを元に戻す');
+    // Preview要素の処理
+    preview.classList.remove('scrolled');
+    preview.style.removeProperty('top');
+    preview.style.removeProperty('left');
+    preview.style.removeProperty('right');
+    preview.style.removeProperty('width');
+    preview.style.removeProperty('height');
+    preview.style.removeProperty('transform');
+    preview.style.removeProperty('border-radius');
+    
+    // PriceBox要素の処理
+    if (priceBox) {
+      priceBox.classList.remove('scrolled');
+      priceBox.style.removeProperty('top');
+      priceBox.style.removeProperty('left');
+      priceBox.style.removeProperty('right');
+      priceBox.style.removeProperty('width');
+      priceBox.style.removeProperty('height');
+      priceBox.style.removeProperty('transform');
+      priceBox.style.removeProperty('border-radius');
+    }
+    
+    isScrolled = false;
+  };
 }
 
 // レイヤー表示を更新

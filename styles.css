@@ -252,6 +252,18 @@ body {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
     border-radius: 12px;
+    transition: all 0.3s ease;
+  }
+  
+  /* スマホでスクロール時のプレビュー（左上50%表示） */
+  .preview.scrolled {
+    top: 20px !important;
+    left: 8px !important;
+    right: auto !important;
+    width: 50% !important;
+    height: 100px !important;
+    transform: scale(0.8) !important;
+    border-radius: 8px !important;
   }
   
   /* スマホではpriceBoxも上部にフローティング */
@@ -267,6 +279,18 @@ body {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
     border-radius: 12px;
+    transition: all 0.3s ease;
+  }
+  
+  /* スマホでスクロール時のpriceBox（左上50%表示） */
+  .priceBox.scrolled {
+    top: 195px !important;
+    left: 8px !important;
+    right: auto !important;
+    width: 50% !important;
+    height: auto !important;
+    transform: scale(0.8) !important;
+    border-radius: 8px !important;
   }
   
   /* スマホ用の設定項目マージン調整 */
