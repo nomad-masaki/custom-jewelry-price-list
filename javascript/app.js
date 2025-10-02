@@ -881,7 +881,7 @@ function init() {
       parentElement.appendChild(newContainer);
       
       const backgroundImg = document.createElement('img');
-      backgroundImg.src = 'images/layer_5_default.png';
+      backgroundImg.src = 'images/layer_5_Original.png';
       backgroundImg.alt = 'アクセサリー背景';
       backgroundImg.className = 'layer-image';
       backgroundImg.style.zIndex = 5;
@@ -891,7 +891,7 @@ function init() {
     } else if (container.children.length === 0) {
       console.log('フォールバック: 背景画像を直接追加');
       const backgroundImg = document.createElement('img');
-      backgroundImg.src = 'images/layer_5_default.png';
+      backgroundImg.src = 'images/layer_5_Original.png';
       backgroundImg.alt = 'アクセサリー背景';
       backgroundImg.className = 'layer-image';
       backgroundImg.style.zIndex = 5;
