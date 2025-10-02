@@ -82,7 +82,100 @@ body {
 .controls::-webkit-scrollbar-thumb:hover {
   background: var(--muted);
 }
-@media (max-width: 860px) { 
+/* iPad Pro（1025px以上）ではデスクトップ表示を維持 */
+@media (min-width: 1025px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    height: calc(100vh - 200px);
+    min-height: 600px;
+  }
+  
+  /* iPad Proでは固定位置を維持 */
+  .grid > div:first-child {
+    position: sticky;
+    top: 20px;
+    height: fit-content;
+    max-height: calc(100vh - 240px);
+  }
+  
+  /* iPad Proではスクロール可能 */
+  .controls {
+    overflow-y: auto;
+    max-height: calc(100vh - 240px);
+    padding-right: 8px;
+  }
+}
+
+/* iPad Mini（768px）の特別対応 */
+@media (min-width: 768px) and (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+    height: calc(100vh - 180px);
+    min-height: 500px;
+    gap: 16px;
+  }
+  
+  /* iPad Miniでは固定位置を維持 */
+  .grid > div:first-child {
+    position: sticky;
+    top: 15px;
+    height: fit-content;
+    max-height: calc(100vh - 220px);
+  }
+  
+  /* iPad Miniではスクロール可能 */
+  .controls {
+    overflow-y: auto;
+    max-height: calc(100vh - 220px);
+    padding-right: 6px;
+  }
+}
+
+/* iPad Air/標準iPad（769px〜1024px）では固定表示を維持 */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+    height: calc(100vh - 200px);
+    min-height: 600px;
+  }
+  
+  /* iPadでは固定位置を維持 */
+  .grid > div:first-child {
+    position: sticky;
+    top: 20px;
+    height: fit-content;
+    max-height: calc(100vh - 240px);
+  }
+  
+  /* iPadではスクロール可能 */
+  .controls {
+    overflow-y: auto;
+    max-height: calc(100vh - 240px);
+    padding-right: 8px;
+  }
+  
+  /* iPad用のスクロールバーのスタイリング */
+  .controls::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .controls::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .controls::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+  }
+  
+  .controls::-webkit-scrollbar-thumb:hover {
+    background: var(--muted);
+  }
+}
+
+/* モバイル（767px以下）では固定位置を解除 */
+@media (max-width: 767px) { 
   .grid { 
     grid-template-columns: 1fr;
     height: auto;
