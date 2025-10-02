@@ -1,7 +1,7 @@
 /**
  * レイヤーマッピングマスターデータ
  * ディレクトリ構造ベースのレイヤー管理
- * layer-1が最前面、layer-4が背面、layer_5_default.pngが背景
+ * layer-1が最前面、layer-4が背面、layer_5_Original.pngが背景  
  */
 
 // レイヤー番号定義（数字が小さいほど前面）
@@ -10,7 +10,7 @@ const LAYER_ORDER = {
   LAYER_2: 2,          // バチカン
   LAYER_3: 3,          // 本体
   LAYER_4: 4,          // 石類（目、牙、たてがみ、バチカン石）
-  BACKGROUND: 5        // 背景（layer_5_default.png）
+  BACKGROUND: 5        // 背景（layer_5_Original.png）
 };
 
 // パーツ・石のレイヤーマッピング（ディレクトリ構造ベース）
@@ -18,7 +18,7 @@ const LAYER_MAPPING = {
   // 背景レイヤー（最背面）
   background: {
     layer: LAYER_ORDER.BACKGROUND,
-    image: "images/layer_5_default.png"
+    image: "images/layer_5_Original.png"
   },
   
   // layer-3: 本体素材
@@ -42,7 +42,7 @@ const LAYER_MAPPING = {
     "5": { layer: LAYER_ORDER.LAYER_1, image: "images/layer-1/layer_1_chain_K18YG.png" },
     "6": { layer: LAYER_ORDER.LAYER_1, image: "images/layer-1/layer_1_chain_K18PG.png" },
     "7": { layer: LAYER_ORDER.LAYER_1, image: "images/layer-1/layer_1_chain_K18WG.png" },
-    "9": { layer: LAYER_ORDER.LAYER_1, image: "images/layer-1/layer_1_chain_Pt850.png" }
+    "8": { layer: LAYER_ORDER.LAYER_1, image: "images/layer-1/layer_1_chain_PT850.png" }
   },
   
   // layer-2: バチカン
@@ -133,10 +133,17 @@ function getActiveLayers(selections) {
     Object.keys(selections.stonesAT).forEach(letter => {
       const stoneType = selections.stonesAT[letter];
       if (stoneType && LAYER_MAPPING.stonesAT[letter]) {
-        // 石の種類に応じて画像パスを変更（layer-4ディレクトリ）
+        // 石の種類と位置に応じて画像パスを変更（layer-4ディレクトリ）
         const stoneLayer = {
           ...LAYER_MAPPING.stonesAT[letter],
-          image: `images/layer-4/layer_4_mane_${stoneType.toLowerCase()}.png`
+          image: `images/layer-4/layer_4_mane_${letter}_${stoneType.toLowerCase()}.png`
+        };
+        activeLayers.push(stoneLayer);
+      } else if (LAYER_MAPPING.stonesAT[letter]) {
+        // 石が選択されていない場合はデフォルト画像を表示
+        const stoneLayer = {
+          ...LAYER_MAPPING.stonesAT[letter],
+          image: `images/layer-4/layer_4_mane_plain.png`
         };
         activeLayers.push(stoneLayer);
       }
