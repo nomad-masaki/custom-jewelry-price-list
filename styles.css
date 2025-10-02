@@ -11,9 +11,10 @@
   --radius: 16px;
   --shadow: 0 10px 24px rgba(0,0,0,.08);
 }
-html, body { 
-  height: 100%; 
+html, body {
+  height: 100%;
   overflow-x: hidden; /* 横スクロールを防ぐ */
+  scroll-behavior: smooth; /* スムーズスクロールを有効化 */
 }
 body {
   margin: 0;
@@ -237,20 +238,40 @@ body {
     margin-left: 0;
   }
   
-  /* スマホではフローティング要素を解除 */
-  .preview,
-  .priceBox {
-    position: static !important;
-    width: auto !important;
-    height: auto !important;
-    background: var(--card) !important;
-    backdrop-filter: none !important;
-    box-shadow: var(--shadow) !important;
+  /* スマホではpreviewを上部にフローティング */
+  .preview {
+    position: fixed;
+    top: 120px;
+    left: 8px;
+    right: 8px;
+    width: auto;
+    height: 200px;
+    z-index: 1000;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    border: 2px solid var(--border);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
   }
   
-  /* スマホ用のプレビューサイズ調整 */
-  .preview {
-    min-height: 180px;
+  /* スマホではpriceBoxも上部にフローティング */
+  .priceBox {
+    position: fixed;
+    top: 330px;
+    left: 8px;
+    right: 8px;
+    width: auto;
+    z-index: 1000;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    border: 2px solid var(--border);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+  }
+  
+  /* スマホ用の設定項目マージン調整 */
+  .controls {
+    margin-top: 380px;
   }
   
   /* スマホ用のフォントサイズ調整 */
@@ -360,6 +381,11 @@ body {
   .accessory-layers-container {
     min-height: 150px;
   }
+  
+  /* スマホ用のページトップボタン表示 */
+  .page-top-btn {
+    display: flex !important;
+  }
 }
 
 /* タブレット（481px〜767px）の対応 */
@@ -384,17 +410,100 @@ body {
     margin-left: 0;
   }
   
-  /* タブレットではフローティング要素を解除 */
-  .preview,
+  /* タブレットではpreviewを上部にフローティング */
+  .preview {
+    position: fixed;
+    top: 120px;
+    left: 16px;
+    right: 16px;
+    width: auto;
+    height: 220px;
+    z-index: 1000;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    border: 2px solid var(--border);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+  }
+  
+  /* タブレットではpriceBoxも上部にフローティング */
   .priceBox {
-    position: static !important;
-    width: auto !important;
-    height: auto !important;
-    background: var(--card) !important;
-    backdrop-filter: none !important;
-    box-shadow: var(--shadow) !important;
+    position: fixed;
+    top: 350px;
+    left: 16px;
+    right: 16px;
+    width: auto;
+    z-index: 1000;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    border: 2px solid var(--border);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+  }
+  
+  /* タブレット用の設定項目マージン調整 */
+  .controls {
+    margin-top: 420px;
+  }
+  
+  /* タブレット用のページトップボタン表示 */
+  .page-top-btn {
+    display: flex !important;
   }
 }
+
+/* iPad Mini用のページトップボタン表示 */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .page-top-btn {
+    display: flex !important;
+  }
+}
+
+/* ページトップボタン */
+.page-top-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  background: var(--card);
+  border: 2px solid var(--border);
+  border-radius: 50%;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  z-index: 1001;
+  display: none; /* デフォルトは非表示 */
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  -webkit-tap-highlight-color: transparent; /* タップ時のハイライトを無効化 */
+  touch-action: manipulation; /* タッチ操作の最適化 */
+}
+
+.page-top-btn:hover {
+  background: var(--bg);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.page-top-btn:active {
+  transform: translateY(0);
+}
+
+.page-top-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* デスクトップ・iPad Pro以上では非表示 */
+@media (min-width: 1025px) {
+  .page-top-btn {
+    display: none !important;
+  }
+}
+
 .preview {
   border: 1px dashed var(--border);
   border-radius: 14px;

@@ -899,6 +899,9 @@ function init() {
     }
   }, 100);
   
+  // ページトップボタンの初期化
+  setupPageTopButton();
+  
   console.log('init完了');
 }
 
@@ -997,6 +1000,114 @@ function updateLayers() {
 }
 
 console.log('スクリプトが読み込まれました');
+
+// ページトップボタンの機能
+function setupPageTopButton() {
+  const pageTopBtn = document.getElementById('pageTopBtn');
+  
+  if (!pageTopBtn) return;
+  
+  // ページトップに移動する関数
+  const scrollToTop = () => {
+    console.log('ページトップボタンがクリックされました');
+    
+    // 複数の方法でスクロールを試行
+    try {
+      // 方法1: 即座にトップに移動（複数の方法）
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      
+      // 方法2: 強制的にトップに移動
+      if (document.documentElement.scrollTop > 0) {
+        document.documentElement.scrollTop = 0;
+      }
+      if (document.body.scrollTop > 0) {
+        document.body.scrollTop = 0;
+      }
+      
+      console.log('スクロール実行: window.scrollTo(0, 0)');
+      console.log('現在のスクロール位置:', window.pageYOffset, document.documentElement.scrollTop, document.body.scrollTop);
+      
+      // 方法3: スムーズスクロールを試行
+      setTimeout(() => {
+        if (window.scrollTo && 'scrollBehavior' in document.documentElement.style) {
+          window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+          });
+          console.log('スムーズスクロール実行');
+        } else {
+          // 方法4: アニメーション付きスクロール
+          const smoothScrollToTop = () => {
+            const currentPosition = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
+            console.log('現在のスクロール位置:', currentPosition);
+            
+            if (currentPosition > 0) {
+              const newPosition = Math.max(0, currentPosition - currentPosition / 8);
+              window.scrollTo(0, newPosition);
+              document.documentElement.scrollTop = newPosition;
+              document.body.scrollTop = newPosition;
+              setTimeout(smoothScrollToTop, 16);
+            } else {
+              console.log('スクロール完了');
+            }
+          };
+          smoothScrollToTop();
+        }
+      }, 100);
+      
+      // 方法5: 最終確認（強制的に0に設定）
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+        console.log('最終確認スクロール実行');
+      }, 200);
+      
+    } catch (error) {
+      console.error('スクロールエラー:', error);
+    }
+  };
+
+  // クリックイベント
+  pageTopBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    scrollToTop();
+  });
+
+  // タッチイベント（モバイル対応）
+  pageTopBtn.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    scrollToTop();
+  });
+  
+  // スクロール位置に応じてボタンの表示/非表示を制御
+  function togglePageTopButton() {
+    const screenWidth = window.innerWidth;
+    
+    // スマホ・タブレット（767px以下）では常に表示
+    if (screenWidth <= 767) {
+      pageTopBtn.style.display = 'flex';
+    } else {
+      // iPad以上ではスクロール位置に応じて表示/非表示
+      if (window.scrollY > 300) {
+        pageTopBtn.style.display = 'flex';
+      } else {
+        pageTopBtn.style.display = 'none';
+      }
+    }
+  }
+  
+  // スクロールイベントリスナー
+  window.addEventListener('scroll', togglePageTopButton);
+  
+  // リサイズイベントリスナー
+  window.addEventListener('resize', togglePageTopButton);
+  
+  // 初期状態を設定
+  togglePageTopButton();
+}
 document.addEventListener("DOMContentLoaded", function() {
   console.log('DOMContentLoadedイベントが発火しました');
   init();
