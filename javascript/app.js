@@ -220,14 +220,14 @@ function updateStoneFormVisibility() {
   const stoneForm = document.querySelector('.stone-settings');
   
   if (stoneForm) {
-    if (mainStoneValue && mainStoneValue !== 'CZ') {
-      // 天然石が選択されている場合は表示
+    // デフォルトは非表示
+    stoneForm.style.display = 'none';
+    console.log('石選択フォームを非表示');
+    
+    // CZ以外（天然石 + CZ または 天然石）が選択されている場合のみ表示
+    if (mainStoneValue && mainStoneValue !== 'A') {
       stoneForm.style.display = 'block';
       console.log('石選択フォームを表示');
-    } else {
-      // CZ選択時または未選択時は非表示
-      stoneForm.style.display = 'none';
-      console.log('石選択フォームを非表示');
     }
   }
 }
@@ -235,6 +235,7 @@ function updateStoneFormVisibility() {
 // 個別石選択のセレクトボックスを更新する関数
 function updateStoneSelectOptions() {
   const mainStoneValue = $('stoneSel') ? $('stoneSel').value : '';
+  console.log('updateStoneSelectOptions呼び出し - mainStoneValue:', mainStoneValue);
   
   // すべての個別石選択を取得
   const allStoneSelects = [
@@ -265,8 +266,8 @@ function updateStoneSelectOptions() {
     { element: $('groupStone16'), type: 'group16' }
   ];
   
-  // 天然石が選択されている場合、CZ以外の選択肢のみを表示
-  if (mainStoneValue && mainStoneValue !== 'CZ') {
+  // CZ以外（天然石 + CZ または 天然石）が選択されている場合
+  if (mainStoneValue && mainStoneValue !== 'A') {
     console.log('天然石選択時 - CZ以外の選択肢のみ表示');
     
     // 個別石選択の更新
@@ -274,6 +275,7 @@ function updateStoneSelectOptions() {
       if (element) {
         // 現在の選択値を保存
         const currentValue = element.value;
+        console.log(`個別石選択更新 - ${type}_${position}, 現在の値: ${currentValue}`);
         
         // オプションをクリア
         element.innerHTML = '';
@@ -284,20 +286,39 @@ function updateStoneSelectOptions() {
         placeholderOption.textContent = '選択してください';
         element.appendChild(placeholderOption);
         
-        // 天然石の選択肢のみを追加
-        MASTER_STONES.individualStones.forEach(stone => {
-          if (stone.value !== 'CZ') {
+        // メインストーン選択に応じて選択肢を追加
+        if (mainStoneValue === 'B') {
+          // 天然石 + CZ選択時はすべての石を表示
+          console.log('天然石 + CZ選択時 - すべての選択肢を追加');
+          MASTER_STONES.individualStones.forEach(stone => {
             const option = document.createElement('option');
             option.value = stone.value;
             option.textContent = stone.label;
             element.appendChild(option);
-          }
-        });
+          });
+        } else if (mainStoneValue === 'C') {
+          // 天然石選択時は天然石のみ（CZ以外）
+          console.log('天然石選択時 - CZ以外の選択肢を追加');
+          MASTER_STONES.individualStones.forEach(stone => {
+            if (stone.value !== 'CZ') {
+              console.log('選択肢を追加:', stone.value, stone.label);
+              const option = document.createElement('option');
+              option.value = stone.value;
+              option.textContent = stone.label;
+              element.appendChild(option);
+            }
+          });
+        }
         
-        // 現在の値がCZ以外の場合は復元
-        if (currentValue && currentValue !== 'CZ') {
+        // 現在の値を復元（可能な場合）
+        if (currentValue && element.querySelector(`option[value="${currentValue}"]`)) {
           element.value = currentValue;
         } else {
+          element.value = '';
+        }
+        
+        // 天然石選択時にCZが選択されている場合はクリア
+        if (mainStoneValue === 'C' && currentValue === 'CZ') {
           element.value = '';
         }
       }
@@ -318,20 +339,36 @@ function updateStoneSelectOptions() {
         placeholderOption.textContent = '選択してください';
         element.appendChild(placeholderOption);
         
-        // 天然石の選択肢のみを追加
-        MASTER_STONES.individualStones.forEach(stone => {
-          if (stone.value !== 'CZ') {
+        // メインストーン選択に応じて選択肢を追加
+        if (mainStoneValue === 'B') {
+          // 天然石 + CZ選択時はすべての石を表示
+          MASTER_STONES.individualStones.forEach(stone => {
             const option = document.createElement('option');
             option.value = stone.value;
             option.textContent = stone.label;
             element.appendChild(option);
-          }
-        });
+          });
+        } else if (mainStoneValue === 'C') {
+          // 天然石選択時は天然石のみ（CZ以外）
+          MASTER_STONES.individualStones.forEach(stone => {
+            if (stone.value !== 'CZ') {
+              const option = document.createElement('option');
+              option.value = stone.value;
+              option.textContent = stone.label;
+              element.appendChild(option);
+            }
+          });
+        }
         
-        // 現在の値がCZ以外の場合は復元
-        if (currentValue && currentValue !== 'CZ') {
+        // 現在の値を復元（可能な場合）
+        if (currentValue && element.querySelector(`option[value="${currentValue}"]`)) {
           element.value = currentValue;
         } else {
+          element.value = '';
+        }
+        
+        // 天然石選択時にCZが選択されている場合はクリア
+        if (mainStoneValue === 'C' && currentValue === 'CZ') {
           element.value = '';
         }
       }
@@ -377,6 +414,12 @@ function checkCZRestriction() {
   const mainStoneValue = mainStoneSelect ? mainStoneSelect.value : '';
   
   console.log('メインストーン選択:', mainStoneValue);
+  
+  // CZ選択時は制限チェックをスキップ
+  if (mainStoneValue === 'A') {
+    console.log('CZ選択時は制限チェックをスキップ');
+    return;
+  }
   
   // すべての個別石選択を取得
   const allStoneSelects = [
@@ -782,6 +825,9 @@ function update() {
   // CZ選択時の制限チェック
   checkCZRestriction(s);
   
+  // 個別石設定の表示制御
+  updateStoneFormVisibility();
+  
   // レイヤー表示を更新
   updateLayers();
 
@@ -828,6 +874,8 @@ function init() {
       console.log('メインストーン選択が変更されました:', e.target.value);
       // CZ制限チェックを実行
       checkCZRestriction();
+      // 個別石選択のオプションを更新
+      updateStoneSelectOptions();
       // 個別石設定を更新
       updateIndividualStones();
       // レイヤー表示を更新
@@ -904,6 +952,10 @@ function init() {
   
   // スマホ用スクロール機能の初期化
   setupMobileScrollPreview();
+  
+  // 個別石設定の表示制御を初期化
+  updateStoneFormVisibility();
+  
   console.log('init完了');
 }
 
@@ -981,16 +1033,10 @@ function setupMobileScrollPreview() {
         preview.style.setProperty('transform', 'scale(0.8)', 'important');
         preview.style.setProperty('border-radius', '8px', 'important');
         
-        // PriceBox要素の処理
+        // PriceBox要素の処理（非表示）
         if (priceBox) {
           priceBox.classList.add('scrolled');
-          priceBox.style.setProperty('top', '195px', 'important');
-          priceBox.style.setProperty('left', '8px', 'important');
-          priceBox.style.setProperty('right', 'auto', 'important');
-          priceBox.style.setProperty('width', '50%', 'important');
-          priceBox.style.setProperty('height', 'auto', 'important');
-          priceBox.style.setProperty('transform', 'scale(0.8)', 'important');
-          priceBox.style.setProperty('border-radius', '8px', 'important');
+          priceBox.style.setProperty('display', 'none', 'important');
         }
         
         isScrolled = true;
@@ -1023,16 +1069,10 @@ function setupMobileScrollPreview() {
         preview.style.removeProperty('transform');
         preview.style.removeProperty('border-radius');
         
-        // PriceBox要素の処理
+        // PriceBox要素の処理（表示に戻す）
         if (priceBox) {
           priceBox.classList.remove('scrolled');
-          priceBox.style.removeProperty('top');
-          priceBox.style.removeProperty('left');
-          priceBox.style.removeProperty('right');
-          priceBox.style.removeProperty('width');
-          priceBox.style.removeProperty('height');
-          priceBox.style.removeProperty('transform');
-          priceBox.style.removeProperty('border-radius');
+          priceBox.style.removeProperty('display');
         }
         
         isScrolled = false;
@@ -1074,13 +1114,7 @@ function setupMobileScrollPreview() {
       
       if (priceBox) {
         priceBox.classList.remove('scrolled');
-        priceBox.style.removeProperty('top');
-        priceBox.style.removeProperty('left');
-        priceBox.style.removeProperty('right');
-        priceBox.style.removeProperty('width');
-        priceBox.style.removeProperty('height');
-        priceBox.style.removeProperty('transform');
-        priceBox.style.removeProperty('border-radius');
+        priceBox.style.removeProperty('display');
       }
       
       isScrolled = false;
@@ -1113,16 +1147,10 @@ function setupMobileScrollPreview() {
     preview.style.setProperty('transform', 'scale(0.8)', 'important');
     preview.style.setProperty('border-radius', '8px', 'important');
     
-    // PriceBox要素の処理
+    // PriceBox要素の処理（非表示）
     if (priceBox) {
       priceBox.classList.add('scrolled');
-      priceBox.style.setProperty('top', '195px', 'important');
-      priceBox.style.setProperty('left', '8px', 'important');
-      priceBox.style.setProperty('right', 'auto', 'important');
-      priceBox.style.setProperty('width', '50%', 'important');
-      priceBox.style.setProperty('height', 'auto', 'important');
-      priceBox.style.setProperty('transform', 'scale(0.8)', 'important');
-      priceBox.style.setProperty('border-radius', '8px', 'important');
+      priceBox.style.setProperty('display', 'none', 'important');
     }
     
     isScrolled = true;
@@ -1140,16 +1168,10 @@ function setupMobileScrollPreview() {
     preview.style.removeProperty('transform');
     preview.style.removeProperty('border-radius');
     
-    // PriceBox要素の処理
+    // PriceBox要素の処理（表示に戻す）
     if (priceBox) {
       priceBox.classList.remove('scrolled');
-      priceBox.style.removeProperty('top');
-      priceBox.style.removeProperty('left');
-      priceBox.style.removeProperty('right');
-      priceBox.style.removeProperty('width');
-      priceBox.style.removeProperty('height');
-      priceBox.style.removeProperty('transform');
-      priceBox.style.removeProperty('border-radius');
+      priceBox.style.removeProperty('display');
     }
     
     isScrolled = false;
