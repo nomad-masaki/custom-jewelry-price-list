@@ -88,99 +88,137 @@ body {
 .controls::-webkit-scrollbar-thumb:hover {
   background: var(--muted);
 }
-/* Fire HD 8 (800x1280) Silk Browser 138系対応 */
+/* Fire HD 8 (800x1280) Silk Browser 138系対応 - 強制的な縦積みレイアウト */
 @media (min-width: 760px) and (max-width: 820px) and (min-height: 1200px) {
   .container {
-    padding: 0 16px;
-    margin: 16px auto;
+    padding: 0 8px;
+    margin: 8px auto;
   }
   
   .card {
-    padding: 16px;
+    padding: 12px;
   }
   
   .grid {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    height: auto;
-    min-height: auto;
+    display: block !important;
+    grid-template-columns: none !important;
+    gap: 0 !important;
+    height: auto !important;
+    min-height: auto !important;
   }
   
   /* Fire HD 8では固定位置を解除 */
   .grid > div:first-child {
-    position: static;
-    max-height: none;
+    position: static !important;
+    max-height: none !important;
+    width: 100% !important;
+    margin-bottom: 16px !important;
   }
   
   /* Fire HD 8ではスクロール制限を解除 */
   .controls {
-    overflow-y: visible;
-    max-height: none;
-    padding-right: 0;
-    margin-left: 0;
+    overflow-y: visible !important;
+    max-height: none !important;
+    padding-right: 0 !important;
+    margin-left: 0 !important;
+    display: block !important;
   }
   
   /* Fire HD 8ではpreviewを通常の位置に */
   .preview {
-    position: relative;
-    width: 100%;
-    height: auto;
-    min-height: 300px;
-    z-index: 1;
-    box-shadow: none;
-    border: 1px dashed var(--border);
-    background: transparent;
-    backdrop-filter: none;
-    border-radius: 14px;
-    transition: all 0.3s ease;
+    position: relative !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 250px !important;
+    z-index: 1 !important;
+    box-shadow: none !important;
+    border: 1px dashed var(--border) !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    border-radius: 14px !important;
+    transition: all 0.3s ease !important;
+    margin-bottom: 16px !important;
   }
   
   /* Fire HD 8ではpriceBoxも通常の位置に */
   .priceBox {
-    position: relative;
-    width: 100%;
-    margin: 12px;
-    border-radius: 14px;
-    background: #fafafa;
-    border: 1px dashed var(--border);
-    z-index: 1;
-    box-shadow: none;
-    backdrop-filter: none;
-    transition: all 0.3s ease;
+    position: relative !important;
+    width: 100% !important;
+    margin: 0 0 16px 0 !important;
+    border-radius: 14px !important;
+    background: #fafafa !important;
+    border: 1px dashed var(--border) !important;
+    z-index: 1 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    transition: all 0.3s ease !important;
+  }
+  
+  /* Fire HD 8用のアクセサリーレイヤーコンテナ調整 */
+  .accessory-layers-container {
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+    left: auto !important;
+    transform: none !important;
+    width: 100% !important;
+    height: 250px !important;
+    margin: 0 auto !important;
+  }
+  
+  /* Fire HD 8用のキー情報調整 */
+  .key-info {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+    width: 100% !important;
+    padding: 12px !important;
+    margin-bottom: 16px !important;
+    background: #f8f9fa !important;
+    border-radius: 8px !important;
   }
   
   /* Fire HD 8用のメイン選択グリッド調整（Flexbox使用） */
   .main-selection-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-bottom: 16px;
+    display: block !important;
+    grid-template-columns: none !important;
+    gap: 0 !important;
+    margin-bottom: 16px !important;
   }
   
   /* Fire HD 8用のフィールド調整 */
   .field {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 8px;
+    display: block !important;
+    margin-bottom: 12px !important;
+    width: 100% !important;
   }
   
   .field label {
-    font-size: 14px;
-    margin-bottom: 4px;
+    font-size: 14px !important;
+    margin-bottom: 4px !important;
+    display: block !important;
   }
   
   .field select {
-    padding: 8px;
-    font-size: 14px;
-    border-radius: 8px;
+    padding: 8px !important;
+    font-size: 14px !important;
+    border-radius: 8px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
   
   /* Fire HD 8用の石グループレイアウト調整 */
   .stone-groups-layout {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+    display: block !important;
+    grid-template-columns: none !important;
+    gap: 0 !important;
+  }
+  
+  .stone-group-left,
+  .stone-group-right {
+    width: 100% !important;
+    margin-bottom: 16px !important;
   }
   
   /* Fire HD 8用のページトップボタン表示 */

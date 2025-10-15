@@ -1018,6 +1018,12 @@ function setupMobileScrollPreview() {
     
     console.log(`スクロール位置: ${scrollY}, 画面幅: ${screenWidth}, isScrolled: ${isScrolled}`);
     
+    // Fire HD 8 (800x1280) の場合はフローティング表示を無効化
+    if (screenWidth >= 760 && screenWidth <= 820 && window.innerHeight >= 1200) {
+      console.log('Fire HD 8検出: フローティング表示を無効化');
+      return;
+    }
+    
     // スマホ・タブレットサイズ（900px以下）で動作
     if (screenWidth <= 900) {
       console.log('スマホ・タブレットサイズでの処理');
