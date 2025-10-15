@@ -88,6 +88,107 @@ body {
 .controls::-webkit-scrollbar-thumb:hover {
   background: var(--muted);
 }
+/* Fire HD 8 (800x1280) Silk Browser 138系対応 */
+@media (min-width: 760px) and (max-width: 820px) and (min-height: 1200px) {
+  .container {
+    padding: 0 16px;
+    margin: 16px auto;
+  }
+  
+  .card {
+    padding: 16px;
+  }
+  
+  .grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    height: auto;
+    min-height: auto;
+  }
+  
+  /* Fire HD 8では固定位置を解除 */
+  .grid > div:first-child {
+    position: static;
+    max-height: none;
+  }
+  
+  /* Fire HD 8ではスクロール制限を解除 */
+  .controls {
+    overflow-y: visible;
+    max-height: none;
+    padding-right: 0;
+    margin-left: 0;
+  }
+  
+  /* Fire HD 8ではpreviewを通常の位置に */
+  .preview {
+    position: relative;
+    width: 100%;
+    height: auto;
+    min-height: 300px;
+    z-index: 1;
+    box-shadow: none;
+    border: 1px dashed var(--border);
+    background: transparent;
+    backdrop-filter: none;
+    border-radius: 14px;
+    transition: all 0.3s ease;
+  }
+  
+  /* Fire HD 8ではpriceBoxも通常の位置に */
+  .priceBox {
+    position: relative;
+    width: 100%;
+    margin: 12px;
+    border-radius: 14px;
+    background: #fafafa;
+    border: 1px dashed var(--border);
+    z-index: 1;
+    box-shadow: none;
+    backdrop-filter: none;
+    transition: all 0.3s ease;
+  }
+  
+  /* Fire HD 8用のメイン選択グリッド調整（Flexbox使用） */
+  .main-selection-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  
+  /* Fire HD 8用のフィールド調整 */
+  .field {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 8px;
+  }
+  
+  .field label {
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+  
+  .field select {
+    padding: 8px;
+    font-size: 14px;
+    border-radius: 8px;
+  }
+  
+  /* Fire HD 8用の石グループレイアウト調整 */
+  .stone-groups-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  /* Fire HD 8用のページトップボタン表示 */
+  .page-top-btn {
+    display: flex !important;
+  }
+}
+
 /* iPad Pro（901px以上）ではデスクトップ表示を維持 */
 @media (min-width: 901px) {
   .grid {
@@ -686,6 +787,15 @@ body {
 .controls {
   display: grid;
 }
+
+/* CSS Grid非対応ブラウザ用のFlexbox fallback */
+@supports not (display: grid) {
+  .controls {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+}
 @media (max-width: 520px){ .controls { grid-template-columns: 1fr; } }
 .field { display: flex; flex-direction: column; gap: 6px; }
 label { font-size: 13px; color: #333; }
@@ -799,6 +909,21 @@ select {
   grid-column: 1;
   grid-row: 1;
   width: 100%;
+}
+
+/* CSS Grid非対応ブラウザ用のFlexbox fallback */
+@supports not (display: grid) {
+  .main-selection-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  
+  .main-selection-grid .field {
+    flex: 1 1 calc(50% - 8px);
+    min-width: 0;
+  }
 }
 
 /* 個別石設定を2カラムに分割（左：たてがみ、右：目＆牙+バチカン） */
