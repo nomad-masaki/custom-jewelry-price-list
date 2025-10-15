@@ -1071,11 +1071,11 @@ function setupMobileScrollPreview() {
             priceBox.style.setProperty('transform', 'scale(0.85)', 'important');
             priceBox.style.setProperty('border-radius', '8px', 'important');
           } else {
-            // iPad Mini & iPad Air（768px〜900px）: 右上に35%表示
+            // iPad Mini & iPad Air（768px〜900px）: 右上に60%表示
             priceBox.style.setProperty('top', '20px', 'important');
             priceBox.style.setProperty('left', 'auto', 'important');
             priceBox.style.setProperty('right', '20px', 'important');
-            priceBox.style.setProperty('width', '35%', 'important');
+            priceBox.style.setProperty('width', '60%', 'important');
             priceBox.style.setProperty('transform', 'scale(0.9)', 'important');
             priceBox.style.setProperty('border-radius', '8px', 'important');
           }
