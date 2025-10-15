@@ -685,8 +685,6 @@ body {
 }
 .controls {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
 }
 @media (max-width: 520px){ .controls { grid-template-columns: 1fr; } }
 .field { display: flex; flex-direction: column; gap: 6px; }
@@ -800,6 +798,7 @@ select {
   margin-bottom: 20px;
   grid-column: 1;
   grid-row: 1;
+  width: 100%;
 }
 
 /* 個別石設定を2カラムに分割（左：たてがみ、右：目＆牙+バチカン） */
