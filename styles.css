@@ -111,6 +111,16 @@ body {
     max-height: calc(100vh - 240px);
     padding-right: 8px;
   }
+  
+  /* iPad Pro用のメイン選択グリッド調整（間隔を詰める） */
+  .main-selection-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    width: 400px;
+    height: 150px;
+    grid-row: 1;
+    grid-column: 1;
+  }
 }
 
 /* iPad Mini & iPad Air（768px〜900px）統合 - スマホと同じ縦並びレイアウト */
@@ -583,6 +593,7 @@ body {
   .main-selection-grid {
     grid-template-columns: 1fr 1fr;
     gap: 16px;
+    width: 100%;
   }
   
   /* タブレット用の石グループレイアウト調整 */
