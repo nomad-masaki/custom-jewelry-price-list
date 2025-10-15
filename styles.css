@@ -88,8 +88,8 @@ body {
 .controls::-webkit-scrollbar-thumb:hover {
   background: var(--muted);
 }
-/* iPad Pro（1025px以上）ではデスクトップ表示を維持 */
-@media (min-width: 1025px) {
+/* iPad Pro（901px以上）ではデスクトップ表示を維持 */
+@media (min-width: 901px) {
   .grid {
     grid-template-columns: 1fr 1fr;
     gap: 24px;
@@ -113,8 +113,8 @@ body {
   }
 }
 
-/* iPad Mini（768px）の特別対応 - スマホと同じ縦並びレイアウト */
-@media (min-width: 768px) and (max-width: 768px) {
+/* iPad Mini & iPad Air（768px〜900px）統合 - スマホと同じ縦並びレイアウト */
+@media (min-width: 768px) and (max-width: 900px) {
   .container {
     padding: 0 20px;
     margin: 20px auto;
@@ -145,193 +145,99 @@ body {
     margin-left: 0;
   }
   
-  /* iPad Miniではpreviewを上部にフローティング */
+  /* iPad Mini & iPad Airではpreviewを通常の位置に */
   .preview {
-    position: fixed;
-    width: auto;
-    height: 260px;
-    z-index: 1000;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-    border: 2px solid var(--border);
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 12px;
-    transition: all 0.3s ease;
-  }
-  
-  /* iPad Miniでスクロール時のプレビュー（左上に縮小表示） */
-  .preview.scrolled {
-    top: 20px !important;
-    left: 20px !important;
-    right: auto !important;
-    width: 40% !important;
-    height: 200px !important;
-    transform: scale(0.9) !important;
-    border-radius: 8px !important;
-  }
-  
-  /* iPad MiniではpriceBoxも上部にフローティング */
-  .priceBox {
-    position: fixed;
-    top: 390px;
-    left: 20px;
-    right: 20px;
-    width: auto;
-    z-index: 1000;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-    border: 2px solid var(--border);
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 12px;
-    transition: all 0.3s ease;
-  }
-  
-  /* iPad Miniでスクロール時のpriceBox（右上に縮小表示） */
-  .priceBox.scrolled {
-    top: 20px !important;
-    left: auto !important;
-    right: 20px !important;
-    width: 60% !important;
-    transform: scale(0.9) !important;
-    border-radius: 8px !important;
-  }
-  
-  /* iPad Miniでスクロール時の選択中のキー表示（非表示） */
-  .preview.scrolled .sub {
-    display: none !important;
-  }
-  
-  /* iPad Miniでスクロール時のバッジ表示（非表示） */
-  .preview.scrolled .badgeWrap {
-    display: none !important;
-  }
-  
-  /* iPad Mini用の設定項目マージン調整 */
-  .controls {
-    margin-top: 460px;
-  }
-  
-  /* iPad Mini用のメイン選択グリッド調整 */
-  .main-selection-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-  }
-  
-  /* iPad Mini用の石グループレイアウト調整 */
-  .stone-groups-layout {
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-  }
-}
-
-/* iPad Air/標準iPad（769px〜1024px）の対応 - スマホと同じ縦並びレイアウト */
-@media (min-width: 769px) and (max-width: 1024px) {
-  .container {
-    padding: 0 20px;
-    margin: 20px auto;
-  }
-  
-  .card {
-    padding: 20px;
-  }
-  
-  .grid {
-    grid-template-columns: 1fr;
+    position: relative;
+    width: 100%;
     height: auto;
-    min-height: auto;
-    gap: 16px;
-  }
-  
-  /* iPad Air/標準iPadでは固定位置を解除 */
-  .grid > div:first-child {
-    position: static;
-    max-height: none;
-  }
-  
-  /* iPad Air/標準iPadではスクロール制限を解除 */
-  .controls {
-    overflow-y: visible;
-    max-height: none;
-    padding-right: 0;
-    margin-left: 0;
-  }
-  
-  /* iPad Air/標準iPadではpreviewを上部にフローティング */
-  .preview {
-    position: fixed;
-    top: 120px;
-    left: 20px;
-    right: 20px;
-    width: auto;
-    height: 280px;
-    z-index: 1000;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-    border: 2px solid var(--border);
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 12px;
+    min-height: 300px;
+    z-index: 1;
+    box-shadow: none;
+    border: 1px dashed var(--border);
+    background: transparent;
+    backdrop-filter: none;
+    border-radius: 14px;
     transition: all 0.3s ease;
   }
   
-  /* iPad Air/標準iPadでスクロール時のプレビュー（左上に縮小表示） */
+  /* iPad Mini & iPad Airでスクロール時のプレビュー（左上に縮小表示） */
   .preview.scrolled {
+    position: fixed !important;
     top: 20px !important;
     left: 20px !important;
     right: auto !important;
     width: 35% !important;
-    height: 220px !important;
-    transform: scale(0.95) !important;
+    height: 200px !important;
+    transform: scale(0.9) !important;
     border-radius: 8px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15) !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 2px solid var(--border) !important;
+    z-index: 1000 !important;
   }
   
-  /* iPad Air/標準iPadではpriceBoxも上部にフローティング */
+  /* iPad Mini & iPad AirではpriceBoxも通常の位置に */
   .priceBox {
-    position: fixed;
-    top: 410px;
-    left: 20px;
-    right: 20px;
-    width: auto;
-    z-index: 1000;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-    border: 2px solid var(--border);
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 12px;
+    position: relative;
+    width: 100%;
+    margin: 12px;
+    border-radius: 14px;
+    background: #fafafa;
+    border: 1px dashed var(--border);
+    z-index: 1;
+    box-shadow: none;
+    backdrop-filter: none;
     transition: all 0.3s ease;
   }
   
-  /* iPad Air/標準iPadでスクロール時のpriceBox（右上に縮小表示） */
+  /* iPad Mini & iPad Airでスクロール時のpriceBox（右上に縮小表示） */
   .priceBox.scrolled {
+    position: fixed !important;
     top: 20px !important;
     left: auto !important;
     right: 20px !important;
     width: 60% !important;
-    transform: scale(0.95) !important;
+    transform: scale(0.9) !important;
     border-radius: 8px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15) !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 2px solid var(--border) !important;
+    z-index: 1000 !important;
+    margin-top: 0 !important;
   }
   
-  /* iPad Air/標準iPadでスクロール時の選択中のキー表示（非表示） */
+  /* iPad Mini & iPad Airでスクロール時の選択中のキー表示（非表示） */
   .preview.scrolled .sub {
     display: none !important;
   }
   
-  /* iPad Air/標準iPadでスクロール時のバッジ表示（非表示） */
+  /* iPad Mini & iPad Airでスクロール時のバッジ表示（非表示） */
   .preview.scrolled .badgeWrap {
     display: none !important;
   }
   
-  /* iPad Air/標準iPad用の設定項目マージン調整 */
-  .controls {
-    margin-top: 480px;
+  /* iPad Mini & iPad Airでスクロール時のkey-info領域全体（非表示） */
+  .preview.scrolled .key-info {
+    display: none !important;
   }
   
-  /* iPad Air/標準iPad用のメイン選択グリッド調整 */
+  /* iPad Mini & iPad Airでスクロール時の画像コンテナ（左寄せ） */
+  .preview.scrolled .accessory-layers-container {
+    left: 0 !important;
+    right: auto !important;
+    transform: translateY(-50%) !important;
+    width: 100% !important;
+  }
+  
+  /* iPad Mini & iPad Air用のメイン選択グリッド調整 */
   .main-selection-grid {
     grid-template-columns: 1fr 1fr;
     gap: 20px;
   }
   
-  /* iPad Air/標準iPad用の石グループレイアウト調整 */
+  /* iPad Mini & iPad Air用の石グループレイアウト調整 */
   .stone-groups-layout {
     grid-template-columns: 1fr 1fr;
     gap: 20px;
@@ -427,6 +333,18 @@ body {
   /* スマホでスクロール時のバッジ表示（非表示） */
   .preview.scrolled .badgeWrap {
     display: none !important;
+  }
+  
+  /* スマホでスクロール時のkey-info領域全体（非表示） */
+  .preview.scrolled .key-info {
+    display: none !important;
+  }
+  
+  /* スマホでスクロール時の画像コンテナ（左寄せ） */
+  .preview.scrolled .accessory-layers-container {
+    left: 0 !important;
+    right: auto !important;
+    transform: translateY(-50%) !important;
   }
   
   /* スマホ用の設定項目マージン調整 */
@@ -602,7 +520,7 @@ body {
     top: 20px !important;
     left: 16px !important;
     right: auto !important;
-    width: 45% !important;
+    width: 40% !important;
     height: 180px !important;
     transform: scale(0.85) !important;
     border-radius: 8px !important;
@@ -629,7 +547,7 @@ body {
     top: 20px !important;
     left: auto !important;
     right: 16px !important;
-    width: 45% !important;
+    width: 60% !important;
     transform: scale(0.85) !important;
     border-radius: 8px !important;
   }
@@ -642,6 +560,18 @@ body {
   /* タブレットでスクロール時のバッジ表示（非表示） */
   .preview.scrolled .badgeWrap {
     display: none !important;
+  }
+  
+  /* タブレットでスクロール時のkey-info領域全体（非表示） */
+  .preview.scrolled .key-info {
+    display: none !important;
+  }
+  
+  /* タブレットでスクロール時の画像コンテナ（左寄せ） */
+  .preview.scrolled .accessory-layers-container {
+    left: 0 !important;
+    right: auto !important;
+    transform: translateY(-50%) !important;
   }
   
   /* タブレット用の設定項目マージン調整 */
@@ -658,8 +588,8 @@ body {
   /* タブレット用の石グループレイアウト調整 */
   .stone-groups-layout {
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
-  }
+  gap: 16px;
+}
   
   /* タブレット用のページトップボタン表示 */
   .page-top-btn {
@@ -723,7 +653,7 @@ body {
   position: relative;
   border: 1px dashed var(--border);
   border-radius: 14px;
-  min-height: 220px;
+  min-height: 300px;
   display: flex;
   align-items: center;
   justify-content: center;

@@ -1018,8 +1018,8 @@ function setupMobileScrollPreview() {
     
     console.log(`スクロール位置: ${scrollY}, 画面幅: ${screenWidth}, isScrolled: ${isScrolled}`);
     
-    // スマホ・タブレットサイズ（1024px以下）で動作
-    if (screenWidth <= 1024) {
+    // スマホ・タブレットサイズ（900px以下）で動作
+    if (screenWidth <= 900) {
       console.log('スマホ・タブレットサイズでの処理');
       if (scrollY > 50 && !isScrolled) {
         // スクロール時：プレビューを左上、priceBoxを右上に縮小表示
@@ -1040,27 +1040,18 @@ function setupMobileScrollPreview() {
           preview.style.setProperty('top', '20px', 'important');
           preview.style.setProperty('left', '16px', 'important');
           preview.style.setProperty('right', 'auto', 'important');
-          preview.style.setProperty('width', '45%', 'important');
+          preview.style.setProperty('width', '270px', 'important');
           preview.style.setProperty('height', '180px', 'important');
           preview.style.setProperty('transform', 'scale(0.85)', 'important');
           preview.style.setProperty('border-radius', '8px', 'important');
-        } else if (screenWidth <= 768) {
-          // iPad Mini（768px）: 左上に40%表示
-          preview.style.setProperty('top', '20px', 'important');
-          preview.style.setProperty('left', '20px', 'important');
-          preview.style.setProperty('right', 'auto', 'important');
-          preview.style.setProperty('width', '40%', 'important');
-          preview.style.setProperty('height', '200px', 'important');
-          preview.style.setProperty('transform', 'scale(0.9)', 'important');
-          preview.style.setProperty('border-radius', '8px', 'important');
         } else {
-          // iPad Air/標準iPad（769px〜1024px）: 左上に35%表示
+          // iPad Mini & iPad Air（768px〜900px）: 左上に35%表示
           preview.style.setProperty('top', '20px', 'important');
           preview.style.setProperty('left', '20px', 'important');
           preview.style.setProperty('right', 'auto', 'important');
           preview.style.setProperty('width', '35%', 'important');
-          preview.style.setProperty('height', '220px', 'important');
-          preview.style.setProperty('transform', 'scale(0.95)', 'important');
+          preview.style.setProperty('height', '200px', 'important');
+          preview.style.setProperty('transform', 'scale(0.9)', 'important');
           preview.style.setProperty('border-radius', '8px', 'important');
         }
         
@@ -1072,28 +1063,20 @@ function setupMobileScrollPreview() {
             // スマホ: 非表示
             priceBox.style.setProperty('display', 'none', 'important');
           } else if (screenWidth <= 767) {
-            // タブレット（481px〜767px）: 右上に45%表示
+            // タブレット（481px〜767px）: 右上に40%表示
             priceBox.style.setProperty('top', '20px', 'important');
             priceBox.style.setProperty('left', 'auto', 'important');
             priceBox.style.setProperty('right', '16px', 'important');
-            priceBox.style.setProperty('width', '45%', 'important');
+            priceBox.style.setProperty('width', '38%', 'important');
             priceBox.style.setProperty('transform', 'scale(0.85)', 'important');
             priceBox.style.setProperty('border-radius', '8px', 'important');
-          } else if (screenWidth <= 768) {
-            // iPad Mini（768px）: 右上に40%表示
-            priceBox.style.setProperty('top', '20px', 'important');
-            priceBox.style.setProperty('left', 'auto', 'important');
-            priceBox.style.setProperty('right', '20px', 'important');
-            priceBox.style.setProperty('width', '40%', 'important');
-            priceBox.style.setProperty('transform', 'scale(0.9)', 'important');
-            priceBox.style.setProperty('border-radius', '8px', 'important');
           } else {
-            // iPad Air/標準iPad（769px〜1024px）: 右上に60%表示
+            // iPad Mini & iPad Air（768px〜900px）: 右上に35%表示
             priceBox.style.setProperty('top', '20px', 'important');
             priceBox.style.setProperty('left', 'auto', 'important');
             priceBox.style.setProperty('right', '20px', 'important');
-            priceBox.style.setProperty('width', '60%', 'important');
-            priceBox.style.setProperty('transform', 'scale(0.95)', 'important');
+            priceBox.style.setProperty('width', '35%', 'important');
+            priceBox.style.setProperty('transform', 'scale(0.9)', 'important');
             priceBox.style.setProperty('border-radius', '8px', 'important');
           }
         }
@@ -1186,7 +1169,7 @@ function setupMobileScrollPreview() {
   // リサイズイベントリスナーを追加
   window.addEventListener('resize', () => {
     const screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth || 0;
-    if (screenWidth > 1024 && isScrolled) {
+    if (screenWidth > 900 && isScrolled) {
       // タブレット以上のサイズになった場合はスタイルをリセット
       preview.classList.remove('scrolled');
       preview.style.removeProperty('top');
@@ -1209,7 +1192,7 @@ function setupMobileScrollPreview() {
       }
       
       isScrolled = false;
-    } else if (screenWidth <= 1024 && isScrolled) {
+    } else if (screenWidth <= 900 && isScrolled) {
       // スマホ・タブレットサイズ内でリサイズされた場合は再適用
       handleScroll();
     }
@@ -1223,7 +1206,7 @@ function setupMobileScrollPreview() {
   setInterval(() => {
     const scrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
     const screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth || 0;
-    if (screenWidth <= 1024) {
+    if (screenWidth <= 900) {
       console.log(`定期確認 - スクロール位置: ${scrollY}, 画面幅: ${screenWidth}, isScrolled: ${isScrolled}`);
     }
   }, 2000);
@@ -1289,23 +1272,23 @@ function setupMobileScrollPreview() {
         priceBox.style.setProperty('width', '45%', 'important');
         priceBox.style.setProperty('transform', 'scale(0.85)', 'important');
         priceBox.style.setProperty('border-radius', '8px', 'important');
-      } else if (screenWidth <= 768) {
-        // iPad Mini（768px）: 右上に40%表示
-        priceBox.style.setProperty('top', '20px', 'important');
-        priceBox.style.setProperty('left', 'auto', 'important');
-        priceBox.style.setProperty('right', '20px', 'important');
-        priceBox.style.setProperty('width', '40%', 'important');
-        priceBox.style.setProperty('transform', 'scale(0.9)', 'important');
-        priceBox.style.setProperty('border-radius', '8px', 'important');
-      } else {
-        // iPad Air/標準iPad（769px〜1024px）: 右上に35%表示
-        priceBox.style.setProperty('top', '20px', 'important');
-        priceBox.style.setProperty('left', 'auto', 'important');
-        priceBox.style.setProperty('right', '20px', 'important');
-        priceBox.style.setProperty('width', '35%', 'important');
-        priceBox.style.setProperty('transform', 'scale(0.95)', 'important');
-        priceBox.style.setProperty('border-radius', '8px', 'important');
-      }
+          } else if (screenWidth <= 768) {
+            // iPad Mini（768px）: 右上に40%表示
+            priceBox.style.setProperty('top', '20px', 'important');
+            priceBox.style.setProperty('left', 'auto', 'important');
+            priceBox.style.setProperty('right', '20px', 'important');
+            priceBox.style.setProperty('width', '40%', 'important');
+            priceBox.style.setProperty('transform', 'scale(0.9)', 'important');
+            priceBox.style.setProperty('border-radius', '8px', 'important');
+          } else {
+            // iPad Air/標準iPad（769px〜900px）: 右上に45%表示
+            priceBox.style.setProperty('top', '20px', 'important');
+            priceBox.style.setProperty('left', 'auto', 'important');
+            priceBox.style.setProperty('right', '20px', 'important');
+            priceBox.style.setProperty('width', '45%', 'important');
+            priceBox.style.setProperty('transform', 'scale(0.9)', 'important');
+            priceBox.style.setProperty('border-radius', '8px', 'important');
+          }
     }
     
     isScrolled = true;
@@ -1520,8 +1503,8 @@ function setupPageTopButton() {
   function togglePageTopButton() {
     const screenWidth = window.innerWidth;
     
-    // スマホ・タブレット（1024px以下）では常に表示
-    if (screenWidth <= 1024) {
+    // スマホ・タブレット（900px以下）では常に表示
+    if (screenWidth <= 900) {
       pageTopBtn.style.display = 'flex';
     } else {
       // iPad以上ではスクロール位置に応じて表示/非表示
