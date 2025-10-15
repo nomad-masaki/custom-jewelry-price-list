@@ -113,8 +113,17 @@ body {
   }
 }
 
-/* iPad Mini（768px）の特別対応 */
+/* iPad Mini（768px）の特別対応 - スマホと同じ縦並びレイアウト */
 @media (min-width: 768px) and (max-width: 768px) {
+  .container {
+    padding: 0 20px;
+    margin: 20px auto;
+  }
+  
+  .card {
+    padding: 20px;
+  }
+  
   .grid {
     grid-template-columns: 1fr;
     height: auto;
@@ -122,87 +131,210 @@ body {
     gap: 16px;
   }
   
-  /* iPad Miniではpreviewを左側にフローティング */
-  .preview {
-    position: fixed;
-    top: 120px;
-    left: 20px;
-    width: 280px;
-    height: 300px;
-    z-index: 1000;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-    border: 2px solid var(--border);
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 12px;
+  /* iPad Miniでは固定位置を解除 */
+  .grid > div:first-child {
+    position: static;
+    max-height: none;
   }
   
-  /* iPad MiniではpriceBoxも左側にフローティング */
-  .priceBox {
-    position: fixed;
-    top: 430px;
-    left: 20px;
-    width: 280px;
-    z-index: 1000;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-    border: 2px solid var(--border);
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 12px;
-  }
-  
-  /* iPad Miniでは設定項目を右側に全幅表示 */
+  /* iPad Miniではスクロール制限を解除 */
   .controls {
-    margin-left: 320px;
     overflow-y: visible;
     max-height: none;
     padding-right: 0;
+    margin-left: 0;
+  }
+  
+  /* iPad Miniではpreviewを上部にフローティング */
+  .preview {
+    position: fixed;
+    width: auto;
+    height: 260px;
+    z-index: 1000;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    border: 2px solid var(--border);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+  }
+  
+  /* iPad Miniでスクロール時のプレビュー（左上に縮小表示） */
+  .preview.scrolled {
+    top: 20px !important;
+    left: 20px !important;
+    right: auto !important;
+    width: 40% !important;
+    height: 200px !important;
+    transform: scale(0.9) !important;
+    border-radius: 8px !important;
+  }
+  
+  /* iPad MiniではpriceBoxも上部にフローティング */
+  .priceBox {
+    position: fixed;
+    top: 390px;
+    left: 20px;
+    right: 20px;
+    width: auto;
+    z-index: 1000;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    border: 2px solid var(--border);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+  }
+  
+  /* iPad Miniでスクロール時のpriceBox（右上に縮小表示） */
+  .priceBox.scrolled {
+    top: 20px !important;
+    left: auto !important;
+    right: 20px !important;
+    width: 60% !important;
+    transform: scale(0.9) !important;
+    border-radius: 8px !important;
+  }
+  
+  /* iPad Miniでスクロール時の選択中のキー表示（非表示） */
+  .preview.scrolled .sub {
+    display: none !important;
+  }
+  
+  /* iPad Miniでスクロール時のバッジ表示（非表示） */
+  .preview.scrolled .badgeWrap {
+    display: none !important;
+  }
+  
+  /* iPad Mini用の設定項目マージン調整 */
+  .controls {
+    margin-top: 460px;
+  }
+  
+  /* iPad Mini用のメイン選択グリッド調整 */
+  .main-selection-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  
+  /* iPad Mini用の石グループレイアウト調整 */
+  .stone-groups-layout {
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
   }
 }
 
-/* iPad Air/標準iPad（769px〜1024px）ではフローティング表示 */
+/* iPad Air/標準iPad（769px〜1024px）の対応 - スマホと同じ縦並びレイアウト */
 @media (min-width: 769px) and (max-width: 1024px) {
+  .container {
+    padding: 0 20px;
+    margin: 20px auto;
+  }
+  
+  .card {
+    padding: 20px;
+  }
+  
   .grid {
     grid-template-columns: 1fr;
     height: auto;
     min-height: auto;
+    gap: 16px;
   }
   
-  /* iPad Air/標準iPadではpreviewを左側にフローティング */
+  /* iPad Air/標準iPadでは固定位置を解除 */
+  .grid > div:first-child {
+    position: static;
+    max-height: none;
+  }
+  
+  /* iPad Air/標準iPadではスクロール制限を解除 */
+  .controls {
+    overflow-y: visible;
+    max-height: none;
+    padding-right: 0;
+    margin-left: 0;
+  }
+  
+  /* iPad Air/標準iPadではpreviewを上部にフローティング */
   .preview {
     position: fixed;
     top: 120px;
     left: 20px;
-    width: 320px;
-    height: 350px;
+    right: 20px;
+    width: auto;
+    height: 280px;
     z-index: 1000;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
     border: 2px solid var(--border);
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
     border-radius: 12px;
+    transition: all 0.3s ease;
   }
   
-  /* iPad Air/標準iPadではpriceBoxも左側にフローティング */
+  /* iPad Air/標準iPadでスクロール時のプレビュー（左上に縮小表示） */
+  .preview.scrolled {
+    top: 20px !important;
+    left: 20px !important;
+    right: auto !important;
+    width: 35% !important;
+    height: 220px !important;
+    transform: scale(0.95) !important;
+    border-radius: 8px !important;
+  }
+  
+  /* iPad Air/標準iPadではpriceBoxも上部にフローティング */
   .priceBox {
     position: fixed;
-    top: 480px;
+    top: 410px;
     left: 20px;
-    width: 320px;
+    right: 20px;
+    width: auto;
     z-index: 1000;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
     border: 2px solid var(--border);
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
     border-radius: 12px;
+    transition: all 0.3s ease;
   }
   
-  /* iPad Air/標準iPadでは設定項目を右側に全幅表示 */
+  /* iPad Air/標準iPadでスクロール時のpriceBox（右上に縮小表示） */
+  .priceBox.scrolled {
+    top: 20px !important;
+    left: auto !important;
+    right: 20px !important;
+    width: 60% !important;
+    transform: scale(0.95) !important;
+    border-radius: 8px !important;
+  }
+  
+  /* iPad Air/標準iPadでスクロール時の選択中のキー表示（非表示） */
+  .preview.scrolled .sub {
+    display: none !important;
+  }
+  
+  /* iPad Air/標準iPadでスクロール時のバッジ表示（非表示） */
+  .preview.scrolled .badgeWrap {
+    display: none !important;
+  }
+  
+  /* iPad Air/標準iPad用の設定項目マージン調整 */
   .controls {
-    margin-left: 360px;
-    overflow-y: visible;
-    max-height: none;
-    padding-right: 0;
+    margin-top: 480px;
+  }
+  
+  /* iPad Air/標準iPad用のメイン選択グリッド調整 */
+  .main-selection-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  
+  /* iPad Air/標準iPad用の石グループレイアウト調整 */
+  .stone-groups-layout {
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
   }
 }
 
@@ -416,12 +548,22 @@ body {
   }
 }
 
-/* タブレット（481px〜767px）の対応 */
+/* タブレット（481px〜767px）の対応 - スマホと同様の縦レイアウト */
 @media (min-width: 481px) and (max-width: 767px) { 
+  .container {
+    padding: 0 16px;
+    margin: 20px auto;
+  }
+  
+  .card {
+    padding: 20px;
+  }
+  
   .grid { 
     grid-template-columns: 1fr;
     height: auto;
     min-height: auto;
+    gap: 16px;
   }
   
   /* タブレットでは固定位置を解除 */
@@ -445,19 +587,31 @@ body {
     left: 16px;
     right: 16px;
     width: auto;
-    height: 220px;
+    height: 240px;
     z-index: 1000;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
     border: 2px solid var(--border);
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
     border-radius: 12px;
+    transition: all 0.3s ease;
+  }
+  
+  /* タブレットでスクロール時のプレビュー（左上に縮小表示） */
+  .preview.scrolled {
+    top: 20px !important;
+    left: 16px !important;
+    right: auto !important;
+    width: 45% !important;
+    height: 180px !important;
+    transform: scale(0.85) !important;
+    border-radius: 8px !important;
   }
   
   /* タブレットではpriceBoxも上部にフローティング */
   .priceBox {
     position: fixed;
-    top: 350px;
+    top: 370px;
     left: 16px;
     right: 16px;
     width: auto;
@@ -467,11 +621,44 @@ body {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
     border-radius: 12px;
+    transition: all 0.3s ease;
+  }
+  
+  /* タブレットでスクロール時のpriceBox（右上に縮小表示） */
+  .priceBox.scrolled {
+    top: 20px !important;
+    left: auto !important;
+    right: 16px !important;
+    width: 45% !important;
+    transform: scale(0.85) !important;
+    border-radius: 8px !important;
+  }
+  
+  /* タブレットでスクロール時の選択中のキー表示（非表示） */
+  .preview.scrolled .sub {
+    display: none !important;
+  }
+  
+  /* タブレットでスクロール時のバッジ表示（非表示） */
+  .preview.scrolled .badgeWrap {
+    display: none !important;
   }
   
   /* タブレット用の設定項目マージン調整 */
   .controls {
-    margin-top: 420px;
+    margin-top: 450px;
+  }
+  
+  /* タブレット用のメイン選択グリッド調整 */
+  .main-selection-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  
+  /* タブレット用の石グループレイアウト調整 */
+  .stone-groups-layout {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
   }
   
   /* タブレット用のページトップボタン表示 */
@@ -533,6 +720,7 @@ body {
 }
 
 .preview {
+  position: relative;
   border: 1px dashed var(--border);
   border-radius: 14px;
   min-height: 220px;
@@ -542,8 +730,17 @@ body {
   color: var(--muted);
 }
 .key-info {
-  margin-left: 5px;
-  align-items: left;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  width: 40%;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 12px;
+  border-radius: 8px;
+  backdrop-filter: blur(5px);
+  box-sizing: border-box;
 }
 .controls {
   display: grid;
@@ -588,8 +785,24 @@ select {
 }
 .btn.secondary { background: #f1f1f1; color: #111; }
 .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
-.badgeWrap { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
-.badge { background:#111; color:#fff; font-size:11px; padding:4px 8px; border-radius: 999px; opacity:.9; }
+.badgeWrap { 
+  display: flex; 
+  gap: 4px; 
+  flex-wrap: wrap; 
+  margin-top: 8px; 
+  max-width: 100%;
+  overflow: hidden;
+}
+.badge { 
+  background:#111; 
+  color:#fff; 
+  font-size:10px; 
+  padding:3px 6px; 
+  border-radius: 999px; 
+  opacity:.9; 
+  white-space: nowrap;
+  flex-shrink: 0;
+}
 .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
 
 /* 個別石設定のスタイル */
@@ -714,7 +927,7 @@ select {
 .stone-item {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: 4px;
   padding: 8px;
   border: 1px solid var(--border);
@@ -726,7 +939,7 @@ select {
   font-size: 11px;
   color: var(--muted);
   font-weight: 500;
-  text-align: center;
+  text-align: left;
 }
 
 .stone-item select {
@@ -981,13 +1194,17 @@ select {
 
 /* アクセサリーレイヤー表示のスタイル */
 .accessory-layers-container {
-  position: relative;
-  width: 100%;
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  width: 60%;
   height: 300px;
   background: #f8f9fa;
   border-radius: var(--radius);
   border: 1px solid var(--border);
   overflow: hidden;
+  z-index: 1;
 }
 
 .layer-image {
