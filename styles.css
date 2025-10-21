@@ -221,41 +221,12 @@ body {
     gap: 0 !important;
   }
   
-  /* スマホでもたてがみは2列構成を維持 */
-  .mane-grid {
-    grid-template-columns: 1fr 1fr !important;
-  }
-  
-  /* スマホでも目&牙は2列構成を維持 */
-  .eye-tooth-grid {
-    grid-template-columns: 1fr 1fr !important;
-  }
-  
-  /* スマホでもバチカンは2列構成を維持 */
-  .vatican-grid {
-    grid-template-columns: 1fr 1fr !important;
-  }
-  
   .stone-group-left,
   .stone-group-right {
     width: 100% !important;
     margin-bottom: 16px !important;
   }
   
-  /* Fire HD 8でもたてがみは2列構成を維持 */
-  .mane-grid {
-    grid-template-columns: 1fr 1fr !important;
-  }
-  
-  /* Fire HD 8でも目&牙は2列構成を維持 */
-  .eye-tooth-grid {
-    grid-template-columns: 1fr 1fr !important;
-  }
-  
-  /* Fire HD 8でもバチカンは2列構成を維持 */
-  .vatican-grid {
-    grid-template-columns: 1fr 1fr !important;
-  }
   
   .page-top-btn {
     display: flex !important;
@@ -490,6 +461,7 @@ body {
   
   /* スマホでスクロール時のプレビュー（左上50%表示） */
   .preview.scrolled {
+    position: fixed !important;
     top: 20px !important;
     left: 8px !important;
     right: auto !important;
@@ -497,6 +469,11 @@ body {
     height: 100px !important;
     transform: scale(0.8) !important;
     border-radius: 8px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15) !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 2px solid var(--border) !important;
+    z-index: 1000 !important;
   }
   
   /* スマホではpriceBoxも通常の位置に */
@@ -753,6 +730,7 @@ body {
   
   /* タブレットでスクロール時のプレビュー（左上に縮小表示） */
   .preview.scrolled {
+    position: fixed !important;
     top: 20px !important;
     left: 16px !important;
     right: auto !important;
@@ -760,6 +738,11 @@ body {
     height: 180px !important;
     transform: scale(0.85) !important;
     border-radius: 8px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15) !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 2px solid var(--border) !important;
+    z-index: 1000 !important;
   }
   
   /* タブレットではpriceBoxも上部にフローティング */
@@ -780,12 +763,18 @@ body {
   
   /* タブレットでスクロール時のpriceBox（右上に縮小表示） */
   .priceBox.scrolled {
+    position: fixed !important;
     top: 20px !important;
     left: auto !important;
     right: 16px !important;
     width: 60% !important;
     transform: scale(0.85) !important;
     border-radius: 8px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15) !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 2px solid var(--border) !important;
+    z-index: 1000 !important;
   }
   
   /* タブレットでスクロール時の選択中のキー表示（非表示） */
