@@ -1029,11 +1029,6 @@ function setupMobileScrollPreview() {
         // PriceBox要素の処理
         if (priceBox) {
           priceBox.classList.add('scrolled');
-          
-          if (screenWidth <= 480) {
-            // スマホ: 非表示
-            priceBox.style.setProperty('display', 'none', 'important');
-          }
         }
         
         isScrolled = true;
@@ -1044,7 +1039,6 @@ function setupMobileScrollPreview() {
         
         if (priceBox) {
           priceBox.classList.remove('scrolled');
-          priceBox.style.removeProperty('display');
         }
         
         isScrolled = false;
@@ -1057,7 +1051,6 @@ function setupMobileScrollPreview() {
         preview.classList.remove('scrolled');
         if (priceBox) {
           priceBox.classList.remove('scrolled');
-          priceBox.style.removeProperty('display');
         }
         isScrolled = false;
       }
@@ -1083,7 +1076,6 @@ function setupMobileScrollPreview() {
       preview.classList.remove('scrolled');
       if (priceBox) {
         priceBox.classList.remove('scrolled');
-        priceBox.style.removeProperty('display');
       }
       isScrolled = false;
     } else if (screenWidth <= 1024 && isScrolled) {
@@ -1114,11 +1106,6 @@ function setupMobileScrollPreview() {
     
     if (priceBox) {
       priceBox.classList.add('scrolled');
-      
-      if (screenWidth <= 480) {
-        // スマホ: 非表示
-        priceBox.style.setProperty('display', 'none', 'important');
-      }
     }
     
     isScrolled = true;
@@ -1130,7 +1117,6 @@ function setupMobileScrollPreview() {
     
     if (priceBox) {
       priceBox.classList.remove('scrolled');
-      priceBox.style.removeProperty('display');
     }
     
     isScrolled = false;
