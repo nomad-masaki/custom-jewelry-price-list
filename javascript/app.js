@@ -196,21 +196,21 @@ function setupGroupToggles() {
   // A〜Tグループのトグル
   const toggleAT = $('groupToggleAT');
   toggleAT.addEventListener('change', (e) => {
-    individualStoneState.groupAT = e.target.checked;
+    stoneManager.state.groupAT = e.target.checked;
     updateGroupMode('AT', e.target.checked);
   });
 
   // a〜dグループのトグル
   const toggleAd = $('groupToggleAd');
   toggleAd.addEventListener('change', (e) => {
-    individualStoneState.groupAd = e.target.checked;
+    stoneManager.state.groupAd = e.target.checked;
     updateGroupMode('Ad', e.target.checked);
   });
 
   // 1〜6グループのトグル
   const toggle16 = $('groupToggle16');
   toggle16.addEventListener('change', (e) => {
-    individualStoneState.group16 = e.target.checked;
+    stoneManager.state.group16 = e.target.checked;
     updateGroupMode('16', e.target.checked);
   });
 }
@@ -271,20 +271,20 @@ function setupGroupStoneSelects() {
 
   // グループ石選択のイベントリスナー
   $('groupStoneAT').addEventListener('change', (e) => {
-    individualStoneState.groupStoneAT = e.target.value;
+    stoneManager.state.groupStoneAT = e.target.value;
     updateIndividualStones();
     updateLayers(); // レイヤー表示を即座に更新
   });
 
   $('groupStoneAd').addEventListener('change', (e) => {
-    individualStoneState.groupStoneAd = e.target.value;
+    stoneManager.state.groupStoneAd = e.target.value;
     updateIndividualStones();
     updateLayers(); // レイヤー表示を即座に更新
   });
 
   $('groupStone16').addEventListener('change', (e) => {
     console.log('バチカングループ石選択が変更されました:', e.target.value);
-    individualStoneState.groupStone16 = e.target.value;
+    stoneManager.state.groupStone16 = e.target.value;
     updateIndividualStones();
     updateLayers(); // レイヤー表示を即座に更新
   });
@@ -293,12 +293,11 @@ function setupGroupStoneSelects() {
 // 個別石選択のイベントリスナー設定
 function setupIndividualStoneSelects() {
   // A〜Tの個別選択
-  const atLetters = 'ABCDEFGHIJKLMNOPQRST'.split('');
-  atLetters.forEach(letter => {
+  CONSTANTS.STONE_LETTERS.AT.forEach(letter => {
     const select = $(`stoneAT_${letter}`);
     if (select) {
       select.addEventListener('change', (e) => {
-        individualStoneState.stonesAT[letter] = e.target.value;
+        stoneManager.state.stonesAT[letter] = e.target.value;
         updateIndividualStones();
         updateLayers(); // レイヤー表示を即座に更新
       });
@@ -306,12 +305,11 @@ function setupIndividualStoneSelects() {
   });
 
   // a〜dの個別選択
-  const adLetters = 'abcd'.split('');
-  adLetters.forEach(letter => {
+  CONSTANTS.STONE_LETTERS.Ad.forEach(letter => {
     const select = $(`stoneAd_${letter}`);
     if (select) {
       select.addEventListener('change', (e) => {
-        individualStoneState.stonesAd[letter] = e.target.value;
+        stoneManager.state.stonesAd[letter] = e.target.value;
         updateIndividualStones();
         updateLayers(); // レイヤー表示を即座に更新
       });
@@ -319,13 +317,12 @@ function setupIndividualStoneSelects() {
   });
 
   // 1〜6の個別選択
-  const numbers = [1, 2, 3, 4, 5, 6];
-  numbers.forEach(num => {
+  CONSTANTS.STONE_LETTERS['16'].forEach(num => {
     const select = $(`stone16_${num}`);
     if (select) {
       select.addEventListener('change', (e) => {
         console.log(`バチカン個別石${num}選択が変更されました:`, e.target.value);
-        individualStoneState.stones16[num] = e.target.value;
+        stoneManager.state.stones16[num] = e.target.value;
         updateIndividualStones();
         updateLayers(); // レイヤー表示を即座に更新
       });
@@ -359,7 +356,7 @@ function showStoneModal() {
   const modal = document.getElementById('stoneModal');
   if (modal) {
     // 現在の石選択状態を保存
-    modalOriginalState = JSON.parse(JSON.stringify(individualStoneState));
+    stoneManager.saveModalOriginalState();
     
     // 現在の設定をモーダルにコピー
     copySettingsToModal();
@@ -756,24 +753,24 @@ function updateModalStoneSelectOptions(mainStoneValue) {
 // 現在の設定をモーダルにコピー
 function copyCurrentSettingsToModal() {
   // 現在の個別石設定をモーダルにコピー
-  Object.keys(individualStoneState.stonesAT || {}).forEach(letter => {
+  Object.keys(stoneManager.state.stonesAT || {}).forEach(letter => {
     const select = document.getElementById(`modalStoneAT_${letter}`);
     if (select) {
-      select.value = individualStoneState.stonesAT[letter] || '';
+      select.value = stoneManager.state.stonesAT[letter] || '';
     }
   });
   
-  Object.keys(individualStoneState.stonesAd || {}).forEach(letter => {
+  Object.keys(stoneManager.state.stonesAd || {}).forEach(letter => {
     const select = document.getElementById(`modalStoneAd_${letter}`);
     if (select) {
-      select.value = individualStoneState.stonesAd[letter] || '';
+      select.value = stoneManager.state.stonesAd[letter] || '';
     }
   });
   
-  Object.keys(individualStoneState.stones16 || {}).forEach(num => {
+  Object.keys(stoneManager.state.stones16 || {}).forEach(num => {
     const select = document.getElementById(`modalStone16_${num}`);
     if (select) {
-      select.value = individualStoneState.stones16[num] || '';
+      select.value = stoneManager.state.stones16[num] || '';
     }
   });
   
@@ -1216,35 +1213,32 @@ function checkCZRestriction() {
 // 個別石設定の更新
 function updateIndividualStones() {
   // グループ設定が有効な場合、個別設定をグループ設定で上書き
-  if (individualStoneState.groupAT && individualStoneState.groupStoneAT) {
-    const atLetters = 'ABCDEFGHIJKLMNOPQRST'.split('');
-    atLetters.forEach(letter => {
+  if (stoneManager.state.groupAT && stoneManager.state.groupStoneAT) {
+    CONSTANTS.STONE_LETTERS.AT.forEach(letter => {
       const select = $(`stoneAT_${letter}`);
       if (select) {
-        select.value = individualStoneState.groupStoneAT;
-        individualStoneState.stonesAT[letter] = individualStoneState.groupStoneAT;
+        select.value = stoneManager.state.groupStoneAT;
+        stoneManager.state.stonesAT[letter] = stoneManager.state.groupStoneAT;
       }
     });
   }
 
-  if (individualStoneState.groupAd && individualStoneState.groupStoneAd) {
-    const adLetters = 'abcd'.split('');
-    adLetters.forEach(letter => {
+  if (stoneManager.state.groupAd && stoneManager.state.groupStoneAd) {
+    CONSTANTS.STONE_LETTERS.Ad.forEach(letter => {
       const select = $(`stoneAd_${letter}`);
       if (select) {
-        select.value = individualStoneState.groupStoneAd;
-        individualStoneState.stonesAd[letter] = individualStoneState.groupStoneAd;
+        select.value = stoneManager.state.groupStoneAd;
+        stoneManager.state.stonesAd[letter] = stoneManager.state.groupStoneAd;
       }
     });
   }
 
-  if (individualStoneState.group16 && individualStoneState.groupStone16) {
-    const numbers = [1, 2, 3, 4, 5, 6];
-    numbers.forEach(num => {
+  if (stoneManager.state.group16 && stoneManager.state.groupStone16) {
+    CONSTANTS.STONE_LETTERS['16'].forEach(num => {
       const select = $(`stone16_${num}`);
       if (select) {
-        select.value = individualStoneState.groupStone16;
-        individualStoneState.stones16[num] = individualStoneState.groupStone16;
+        select.value = stoneManager.state.groupStone16;
+        stoneManager.state.stones16[num] = stoneManager.state.groupStone16;
       }
     });
   }
@@ -1269,32 +1263,29 @@ function updateStoneVisualization() {
   };
 
   // グループ設定が有効な場合
-  if (individualStoneState.groupAT && individualStoneState.groupStoneAT) {
-    const atLetters = 'ABCDEFGHIJKLMNOPQRST'.split('');
-    atLetters.forEach(letter => {
-      currentStones.AT[letter] = individualStoneState.groupStoneAT;
+  if (stoneManager.state.groupAT && stoneManager.state.groupStoneAT) {
+    CONSTANTS.STONE_LETTERS.AT.forEach(letter => {
+      currentStones.AT[letter] = stoneManager.state.groupStoneAT;
     });
   } else {
     // 個別設定
-    currentStones.AT = individualStoneState.stonesAT;
+    currentStones.AT = stoneManager.state.stonesAT;
   }
 
-  if (individualStoneState.groupAd && individualStoneState.groupStoneAd) {
-    const adLetters = 'abcd'.split('');
-    adLetters.forEach(letter => {
-      currentStones.Ad[letter] = individualStoneState.groupStoneAd;
+  if (stoneManager.state.groupAd && stoneManager.state.groupStoneAd) {
+    CONSTANTS.STONE_LETTERS.Ad.forEach(letter => {
+      currentStones.Ad[letter] = stoneManager.state.groupStoneAd;
     });
   } else {
-    currentStones.Ad = individualStoneState.stonesAd;
+    currentStones.Ad = stoneManager.state.stonesAd;
   }
 
-  if (individualStoneState.group16 && individualStoneState.groupStone16) {
-    const num16 = '123456'.split('');
-    num16.forEach(num => {
-      currentStones['16'][num] = individualStoneState.groupStone16;
+  if (stoneManager.state.group16 && stoneManager.state.groupStone16) {
+    CONSTANTS.STONE_LETTERS['16'].forEach(num => {
+      currentStones['16'][num] = stoneManager.state.groupStone16;
     });
   } else {
-    currentStones['16'] = individualStoneState.stones16;
+    currentStones['16'] = stoneManager.state.stones16;
   }
 
   // A〜Tの石表示を更新
@@ -1463,15 +1454,7 @@ function checkCZRestriction(stoneType) {
 // 個別石設定のリセット
 function resetIndividualStoneSettings() {
   // 状態をリセット
-  individualStoneState.groupAT = false;
-  individualStoneState.groupAd = false;
-  individualStoneState.group16 = false;
-  individualStoneState.stonesAT = {};
-  individualStoneState.stonesAd = {};
-  individualStoneState.stones16 = {};
-  individualStoneState.groupStoneAT = '';
-  individualStoneState.groupStoneAd = '';
-  individualStoneState.groupStone16 = '';
+  stoneManager.clearStoneSettings();
 
   // UIをリセット
   $('groupToggleAT').checked = false;
@@ -1675,9 +1658,7 @@ function resetStoneSettings() {
 // ストーン設定をキャンセル
 function cancelStoneSettings() {
   // 元の状態に復元
-  if (modalOriginalState) {
-    Object.assign(individualStoneState, modalOriginalState);
-  }
+  stoneManager.restoreModalOriginalState();
   
   // メインのプレビューを更新
   updateLayers();
@@ -1689,61 +1670,53 @@ function cancelStoneSettings() {
 // モーダル内の設定をメインの設定にコピー
 function copyModalSettingsToMain() {
   // 個別石設定をコピー
-  individualStoneState.stonesAT = {};
-  individualStoneState.stonesAd = {};
-  individualStoneState.stones16 = {};
+  stoneManager.state.stonesAT = {};
+  stoneManager.state.stonesAd = {};
+  stoneManager.state.stones16 = {};
   
   // A〜Tの個別選択
-  'ABCDEFGHIJKLMNOPQRST'.split('').forEach(letter => {
+  CONSTANTS.STONE_LETTERS.AT.forEach(letter => {
     const select = document.getElementById(`modalStoneAT_${letter}`);
     if (select && select.value) {
-      individualStoneState.stonesAT[letter] = select.value;
+      stoneManager.state.stonesAT[letter] = select.value;
     }
   });
   
   // a〜dの個別選択
-  'abcd'.split('').forEach(letter => {
+  CONSTANTS.STONE_LETTERS.Ad.forEach(letter => {
     const select = document.getElementById(`modalStoneAd_${letter}`);
     if (select && select.value) {
-      individualStoneState.stonesAd[letter] = select.value;
+      stoneManager.state.stonesAd[letter] = select.value;
     }
   });
   
   // 1〜6の個別選択
-  [1,2,3,4,5,6].forEach(num => {
+  CONSTANTS.STONE_LETTERS['16'].forEach(num => {
     const select = document.getElementById(`modalStone16_${num}`);
     if (select && select.value) {
-      individualStoneState.stones16[num] = select.value;
+      stoneManager.state.stones16[num] = select.value;
     }
   });
   
   // グループ設定をコピー
-  individualStoneState.groupAT = document.getElementById('modalGroupToggleAT')?.checked || false;
-  individualStoneState.groupAd = document.getElementById('modalGroupToggleAd')?.checked || false;
-  individualStoneState.group16 = document.getElementById('modalGroupToggle16')?.checked || false;
+  stoneManager.state.groupAT = document.getElementById('modalGroupToggleAT')?.checked || false;
+  stoneManager.state.groupAd = document.getElementById('modalGroupToggleAd')?.checked || false;
+  stoneManager.state.group16 = document.getElementById('modalGroupToggle16')?.checked || false;
   
-  individualStoneState.groupStoneAT = document.getElementById('modalGroupStoneAT')?.value || '';
-  individualStoneState.groupStoneAd = document.getElementById('modalGroupStoneAd')?.value || '';
-  individualStoneState.groupStone16 = document.getElementById('modalGroupStone16')?.value || '';
+  stoneManager.state.groupStoneAT = document.getElementById('modalGroupStoneAT')?.value || '';
+  stoneManager.state.groupStoneAd = document.getElementById('modalGroupStoneAd')?.value || '';
+  stoneManager.state.groupStone16 = document.getElementById('modalGroupStone16')?.value || '';
 }
 
 // 石設定のデータをクリア
 function clearStoneSettings() {
-  individualStoneState.stonesAT = {};
-  individualStoneState.stonesAd = {};
-  individualStoneState.stones16 = {};
-  individualStoneState.groupAT = false;
-  individualStoneState.groupAd = false;
-  individualStoneState.group16 = false;
-  individualStoneState.groupStoneAT = '';
-  individualStoneState.groupStoneAd = '';
-  individualStoneState.groupStone16 = '';
+  stoneManager.clearStoneSettings();
 }
 
 // モーダル内の石選択をクリア
 function clearModalStoneSettings() {
   // A〜Tの個別選択をクリア
-  'ABCDEFGHIJKLMNOPQRST'.split('').forEach(letter => {
+  CONSTANTS.STONE_LETTERS.AT.forEach(letter => {
     const select = document.getElementById(`modalStoneAT_${letter}`);
     if (select) {
       select.value = '';
@@ -1751,7 +1724,7 @@ function clearModalStoneSettings() {
   });
   
   // a〜dの個別選択をクリア
-  'abcd'.split('').forEach(letter => {
+  CONSTANTS.STONE_LETTERS.Ad.forEach(letter => {
     const select = document.getElementById(`modalStoneAd_${letter}`);
     if (select) {
       select.value = '';
@@ -1759,7 +1732,7 @@ function clearModalStoneSettings() {
   });
   
   // 1〜6の個別選択をクリア
-  [1,2,3,4,5,6].forEach(num => {
+  CONSTANTS.STONE_LETTERS['16'].forEach(num => {
     const select = document.getElementById(`modalStone16_${num}`);
     if (select) {
       select.value = '';
@@ -1878,38 +1851,27 @@ function updateLayers() {
   }
 
   // 現在の選択状態を取得
-  const selections = {
-    body: $("bodySel") ? $("bodySel").value : '',
-    chain: $("chainSel") ? $("chainSel").value : '',
-    bail: $("bailSel") ? $("bailSel").value : '',
-    stonesAT: individualStoneState.stonesAT || {},
-    stonesAd: individualStoneState.stonesAd || {},
-    stones16: individualStoneState.stones16 || {}
-  };
-
+  const selections = stoneManager.getStoneSelections();
 
   // グループ設定が有効な場合の処理
-  if (individualStoneState.groupAT && individualStoneState.groupStoneAT) {
-    const atLetters = 'ABCDEFGHIJKLMNOPQRST'.split('');
+  if (stoneManager.state.groupAT && stoneManager.state.groupStoneAT) {
     selections.stonesAT = {};
-    atLetters.forEach(letter => {
-      selections.stonesAT[letter] = individualStoneState.groupStoneAT;
+    CONSTANTS.STONE_LETTERS.AT.forEach(letter => {
+      selections.stonesAT[letter] = stoneManager.state.groupStoneAT;
     });
   }
 
-  if (individualStoneState.groupAd && individualStoneState.groupStoneAd) {
-    const adLetters = 'abcd'.split('');
+  if (stoneManager.state.groupAd && stoneManager.state.groupStoneAd) {
     selections.stonesAd = {};
-    adLetters.forEach(letter => {
-      selections.stonesAd[letter] = individualStoneState.groupStoneAd;
+    CONSTANTS.STONE_LETTERS.Ad.forEach(letter => {
+      selections.stonesAd[letter] = stoneManager.state.groupStoneAd;
     });
   }
 
-  if (individualStoneState.group16 && individualStoneState.groupStone16) {
-    const num16 = '123456'.split('');
+  if (stoneManager.state.group16 && stoneManager.state.groupStone16) {
     selections.stones16 = {};
-    num16.forEach(num => {
-      selections.stones16[num] = individualStoneState.groupStone16;
+    CONSTANTS.STONE_LETTERS['16'].forEach(num => {
+      selections.stones16[num] = stoneManager.state.groupStone16;
     });
   }
 
