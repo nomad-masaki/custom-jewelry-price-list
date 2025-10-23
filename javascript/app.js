@@ -3,27 +3,105 @@
  * マスターデータは外部ファイルから読み込み
  */
 
+// ============================================================================
+// 定数とユーティリティ関数
+// ============================================================================
+
 // PRICE_TABLEは外部ファイル(price_table.js)から読み込み
 const $ = (id) => document.getElementById(id);
 const fmtJPY = (n) => new Intl.NumberFormat("ja-JP", { style: "currency", currency: "JPY", maximumFractionDigits: 0 }).format(n);
 
-// 個別石設定の状態管理
-const individualStoneState = {
-  // グループ設定の状態
-  groupAT: false,
-  groupAd: false,
-  group16: false,
-  
-  // 個別石の設定
-  stonesAT: {}, // A〜Tの石設定
-  stonesAd: {}, // a〜dの石設定
-  stones16: {}, // 1〜6の石設定
-  
-  // グループ石の設定
-  groupStoneAT: '',
-  groupStoneAd: '',
-  groupStone16: ''
+// 定数
+const CONSTANTS = {
+  STONE_LETTERS: {
+    AT: 'ABCDEFGHIJKLMNOPQRST'.split(''),
+    Ad: 'abcd'.split(''),
+    '16': [1, 2, 3, 4, 5, 6]
+  },
+  LAYER_Z_INDEX_BASE: 1000,
+  MODAL_STONE_GROUPS: ['AT', 'Ad', '16']
 };
+
+// ユーティリティ関数
+const Utils = {
+  // 深いコピーを作成
+  deepClone: (obj) => JSON.parse(JSON.stringify(obj)),
+  
+  // 要素が存在するかチェック
+  exists: (element) => element !== null && element !== undefined,
+  
+  // 空のオブジェクトかチェック
+  isEmpty: (obj) => Object.keys(obj).length === 0,
+  
+  // 配列を空にする
+  clearArray: (arr) => arr.length = 0,
+  
+  // オブジェクトを空にする
+  clearObject: (obj) => Object.keys(obj).forEach(key => delete obj[key])
+};
+
+
+// ============================================================================
+// 石選択管理クラス
+// ============================================================================
+
+class StoneManager {
+  constructor() {
+    this.state = {
+      groupAT: false,
+      groupAd: false,
+      group16: false,
+      stonesAT: {},
+      stonesAd: {},
+      stones16: {},
+      groupStoneAT: '',
+      groupStoneAd: '',
+      groupStone16: ''
+    };
+    this.modalOriginalState = null;
+  }
+
+  // 石選択をクリア
+  clearStoneSettings() {
+    Utils.clearObject(this.state.stonesAT);
+    Utils.clearObject(this.state.stonesAd);
+    Utils.clearObject(this.state.stones16);
+    this.state.groupAT = false;
+    this.state.groupAd = false;
+    this.state.group16 = false;
+    this.state.groupStoneAT = '';
+    this.state.groupStoneAd = '';
+    this.state.groupStone16 = '';
+  }
+
+  // モーダル表示前の状態を保存
+  saveModalOriginalState() {
+    this.modalOriginalState = Utils.deepClone(this.state);
+  }
+
+  // モーダル表示前の状態に復元
+  restoreModalOriginalState() {
+    if (this.modalOriginalState) {
+      Object.assign(this.state, this.modalOriginalState);
+    }
+  }
+
+  // 石選択の状態を取得
+  getStoneSelections() {
+    return {
+      body: $("bodySel")?.value || '',
+      chain: $("chainSel")?.value || '',
+      bail: $("bailSel")?.value || '',
+      stone: $("stoneSel")?.value || '',
+      stonesAT: this.state.stonesAT,
+      stonesAd: this.state.stonesAd,
+      stones16: this.state.stones16
+    };
+  }
+}
+
+// 石選択管理のインスタンス
+const stoneManager = new StoneManager();
 
 // ============================================================================
 // ユーティリティ関数
@@ -31,6 +109,36 @@ const individualStoneState = {
 
 function fillSelect(el, items) {
   el.innerHTML = `<option value="">選択してください</option>` + items.map(it => `<option value="${it.value}">${it.label}</option>`).join("");
+}
+
+// レイヤー画像を作成する共通関数
+function createLayerImage(layer, index) {
+  const img = document.createElement('img');
+  img.src = layer.image;
+  img.alt = 'アクセサリーレイヤー';
+  img.className = 'layer-image';
+  img.style.position = 'absolute';
+  img.style.top = '0';
+  img.style.left = '0';
+  img.style.width = '100%';
+  img.style.height = '100%';
+  img.style.objectFit = 'contain';
+  // レイヤー番号が小さいほど前面に表示（z-indexを逆順にする）
+  img.style.zIndex = CONSTANTS.LAYER_Z_INDEX_BASE - layer.layer;
+  
+  // 石の画像の場合は透過度を調整（背景画像は不透明）
+  if (layer.layer === 4) { // layer-4は石類
+    img.style.opacity = '0.8'; // 少し透過させる
+  } else {
+    img.style.opacity = '1.0'; // 完全に不透明
+  }
+  
+  // 画像読み込みエラーの処理
+  img.onerror = function() {
+    this.style.display = 'none';
+  };
+  
+  return img;
 }
 
 function keyOf(b, k, c, s) { 
@@ -111,32 +219,43 @@ function setupGroupToggles() {
 function updateGroupMode(group, isGroupMode) {
   const groupElement = document.querySelector(`#groupControl${group}`);
   const individualElement = document.querySelector(`#individualControl${group}`);
-  const stoneGroup = groupElement.closest('.stone-group');
-  const titleElement = stoneGroup.querySelector('h4');
+  if (!groupElement) return;
+  
+  // タイトル要素を探す（新しい構造に対応）
+  let titleElement = null;
+  if (group === 'AT') {
+    titleElement = document.querySelector('.stone-selection-content h4:first-child');
+  } else if (group === 'Ad') {
+    titleElement = document.querySelector('.stone-selection-content h4:nth-child(2)');
+  } else if (group === '16') {
+    titleElement = document.querySelector('.stone-selection-content h4:last-child');
+  }
 
   if (isGroupMode) {
-    stoneGroup.classList.add('group-mode');
     groupElement.style.display = 'block';
+    if (individualElement) {
     individualElement.style.display = 'none';
+    }
     
     // グループモード時のタイトルを設定
     if (titleElement) {
       const groupTitles = {
         'AT': 'たてがみグループ',
-        'Ad': '目 ＆ 牙グループ',
+        'Ad': '目＆牙グループ',
         '16': 'バチカングループ'
       };
       titleElement.setAttribute('data-group-title', groupTitles[group] || titleElement.textContent);
     }
   } else {
-    stoneGroup.classList.remove('group-mode');
     groupElement.style.display = 'none';
+    if (individualElement) {
     individualElement.style.display = 'block';
+  }
     
-    // 通常モードに戻す
+    // 個別モード時はタイトルを元に戻す
     if (titleElement) {
       titleElement.removeAttribute('data-group-title');
-  }
+    }
   }
   
   // レイヤー表示を更新
@@ -217,19 +336,579 @@ function setupIndividualStoneSelects() {
 // 石選択フォームの表示制御
 function updateStoneFormVisibility() {
   const mainStoneValue = $('stoneSel') ? $('stoneSel').value : '';
-  const stoneForm = document.querySelector('.stone-settings');
+  const stoneForm = document.querySelector('.stone-selection-component');
+  const stoneModalBtn = document.getElementById('stoneModalBtn');
   
   if (stoneForm) {
     // デフォルトは非表示
     stoneForm.style.display = 'none';
-    console.log('石選択フォームを非表示');
-    
-    // CZ以外（天然石 + CZ または 天然石）が選択されている場合のみ表示
-    if (mainStoneValue && mainStoneValue !== 'A') {
-      stoneForm.style.display = 'block';
-      console.log('石選択フォームを表示');
+  }
+  
+  if (stoneModalBtn) {
+    // CZ + 天然石（B）または天然石（C）が選択されている場合はボタンを表示
+    if (mainStoneValue === 'B' || mainStoneValue === 'C') {
+      stoneModalBtn.style.display = 'block';
+    } else {
+      stoneModalBtn.style.display = 'none';
     }
   }
+}
+
+// ストーン設定モーダルを表示
+function showStoneModal() {
+  const modal = document.getElementById('stoneModal');
+  if (modal) {
+    // 現在の石選択状態を保存
+    modalOriginalState = JSON.parse(JSON.stringify(individualStoneState));
+    
+    // 現在の設定をモーダルにコピー
+    copySettingsToModal();
+    
+    // モーダルを表示
+    modal.style.display = 'flex';
+    
+    // モーダル内の石選択を初期化
+    initializeModalStoneSettings();
+  }
+}
+
+// ストーン設定モーダルを非表示
+function hideStoneModal() {
+  const modal = document.getElementById('stoneModal');
+  if (modal) {
+    modal.style.display = 'none';
+  }
+}
+
+// 現在の設定をモーダルにコピー
+function copySettingsToModal() {
+  // 現在の選択状態を取得
+  const currentSelections = {
+    body: $("bodySel") ? $("bodySel").value : '',
+    chain: $("chainSel") ? $("chainSel").value : '',
+    bail: $("bailSel") ? $("bailSel").value : '',
+    stone: $("stoneSel") ? $("stoneSel").value : ''
+  };
+  
+  // モーダルのプレビューを更新
+  updateModalPreview(currentSelections);
+}
+
+// モーダルのプレビューを更新
+function updateModalPreview(selections) {
+  const modalAccessoryLayers = document.getElementById('modalAccessoryLayers');
+  const modalBadges = document.getElementById('modalBadges');
+  
+  if (modalAccessoryLayers) {
+    // レイヤー画像を更新
+    updateModalLayers(selections);
+  }
+  
+  if (modalBadges) {
+    // バッジを更新
+    updateModalBadges(selections);
+  }
+}
+
+// モーダルのレイヤーを更新
+function updateModalLayers(selections) {
+  const container = document.getElementById('modalAccessoryLayers');
+  if (!container) return;
+  
+  // 現在の選択状態に基づいてレイヤーを取得
+  const activeLayers = getActiveLayers({
+    body: selections.body,
+    chain: selections.chain,
+    bail: selections.bail,
+    stonesAT: selections.stonesAT || {},
+    stonesAd: selections.stonesAd || {},
+    stones16: selections.stones16 || {}
+  });
+  
+  // コンテナをクリア
+  container.innerHTML = '';
+  
+  // レイヤー画像を追加（レイヤー番号の小さい順にソート）
+  activeLayers.sort((a, b) => a.layer - b.layer).forEach((layer, index) => {
+    const img = this.createLayerImage(layer, index);
+    container.appendChild(img);
+  });
+}
+
+// モーダルのバッジを更新
+function updateModalBadges(selections) {
+  const modalBadges = document.getElementById('modalBadges');
+  if (!modalBadges) return;
+  
+  modalBadges.innerHTML = '';
+  
+  // 選択されたパーツのバッジを表示
+  if (selections.body) {
+    const badge = document.createElement('span');
+    badge.className = 'badge';
+    badge.textContent = `本体: ${selections.body}`;
+    modalBadges.appendChild(badge);
+  }
+  
+  if (selections.chain) {
+    const badge = document.createElement('span');
+    badge.className = 'badge';
+    badge.textContent = `チェーン: ${selections.chain}`;
+    modalBadges.appendChild(badge);
+  }
+  
+  if (selections.bail) {
+    const badge = document.createElement('span');
+    badge.className = 'badge';
+    badge.textContent = `バチカン: ${selections.bail}`;
+    modalBadges.appendChild(badge);
+  }
+  
+  // 選択された石のバッジを表示
+  const selectedStones = [];
+  
+  // A〜Tの石選択
+  Object.keys(selections.stonesAT || {}).forEach(letter => {
+    if (selections.stonesAT[letter]) {
+      selectedStones.push(`${letter}:${selections.stonesAT[letter]}`);
+    }
+  });
+  
+  // a〜dの石選択
+  Object.keys(selections.stonesAd || {}).forEach(letter => {
+    if (selections.stonesAd[letter]) {
+      selectedStones.push(`${letter}:${selections.stonesAd[letter]}`);
+    }
+  });
+  
+  // 1〜6の石選択
+  Object.keys(selections.stones16 || {}).forEach(num => {
+    if (selections.stones16[num]) {
+      selectedStones.push(`${num}:${selections.stones16[num]}`);
+    }
+  });
+  
+  // 石選択のバッジを表示（最大5個まで）
+  selectedStones.slice(0, 5).forEach(stone => {
+    const badge = document.createElement('span');
+    badge.className = 'badge';
+    badge.textContent = stone;
+    modalBadges.appendChild(badge);
+  });
+  
+  // 5個を超える場合は「...」を表示
+  if (selectedStones.length > 5) {
+    const badge = document.createElement('span');
+    badge.className = 'badge';
+    badge.textContent = `+${selectedStones.length - 5}個`;
+    modalBadges.appendChild(badge);
+  }
+}
+
+// モーダル内の石選択を初期化
+function initializeModalStoneSettings() {
+  const mainStoneValue = $('stoneSel') ? $('stoneSel').value : '';
+  
+  // モーダル内の個別石選択要素を動的に生成
+  generateModalStoneElements();
+  
+  // モーダル内のグループ設定を初期化
+  setupModalGroupToggles();
+  setupModalGroupStoneSelects();
+  setupModalIndividualStoneSelects();
+  
+  // 選択肢を更新
+  updateModalStoneSelectOptions(mainStoneValue);
+  
+  // 現在の設定をモーダルに反映
+  copyCurrentSettingsToModal();
+}
+
+// モーダル内の個別石選択要素を動的に生成
+function generateModalStoneElements() {
+  // A〜Tの個別選択を生成
+  const maneGrid = document.querySelector('#modalIndividualControlAT .stone-grid');
+  if (maneGrid) {
+    maneGrid.innerHTML = '';
+    CONSTANTS.STONE_LETTERS.AT.forEach(letter => {
+      const stoneItem = document.createElement('div');
+      stoneItem.className = 'stone-item';
+      
+      const label = document.createElement('label');
+      label.textContent = letter;
+      
+      const select = document.createElement('select');
+      select.id = `modalStoneAT_${letter}`;
+      
+      stoneItem.appendChild(label);
+      stoneItem.appendChild(select);
+      maneGrid.appendChild(stoneItem);
+    });
+  }
+  
+  // a〜dの個別選択を生成
+  const eyeToothGrid = document.querySelector('#modalIndividualControlAd .stone-grid');
+  if (eyeToothGrid) {
+    eyeToothGrid.innerHTML = '';
+    CONSTANTS.STONE_LETTERS.Ad.forEach(letter => {
+      const stoneItem = document.createElement('div');
+      stoneItem.className = 'stone-item';
+      
+      const label = document.createElement('label');
+      label.textContent = letter;
+      
+      const select = document.createElement('select');
+      select.id = `modalStoneAd_${letter}`;
+      
+      stoneItem.appendChild(label);
+      stoneItem.appendChild(select);
+      eyeToothGrid.appendChild(stoneItem);
+    });
+  }
+  
+  // 1〜6の個別選択を生成
+  const vaticanGrid = document.querySelector('#modalIndividualControl16 .stone-grid');
+  if (vaticanGrid) {
+    vaticanGrid.innerHTML = '';
+    CONSTANTS.STONE_LETTERS['16'].forEach(num => {
+      const stoneItem = document.createElement('div');
+      stoneItem.className = 'stone-item';
+      
+      const label = document.createElement('label');
+      label.textContent = num;
+      
+      const select = document.createElement('select');
+      select.id = `modalStone16_${num}`;
+      
+      stoneItem.appendChild(label);
+      stoneItem.appendChild(select);
+      vaticanGrid.appendChild(stoneItem);
+    });
+  }
+}
+
+// モーダル内のグループ設定を初期化
+function setupModalGroupToggles() {
+  const toggles = [
+    { id: 'modalGroupToggleAT', group: 'AT' },
+    { id: 'modalGroupToggleAd', group: 'Ad' },
+    { id: 'modalGroupToggle16', group: '16' }
+  ];
+  
+  toggles.forEach(({ id, group }) => {
+    const toggle = document.getElementById(id);
+    if (toggle) {
+      toggle.addEventListener('change', (e) => {
+        updateModalGroupMode(group, e.target.checked);
+      });
+    }
+  });
+}
+
+// モーダル内のグループ石選択を初期化
+function setupModalGroupStoneSelects() {
+  const groupSelects = [
+    { id: 'modalGroupStoneAT', group: 'AT' },
+    { id: 'modalGroupStoneAd', group: 'Ad' },
+    { id: 'modalGroupStone16', group: '16' }
+  ];
+  
+  groupSelects.forEach(({ id, group }) => {
+    const select = document.getElementById(id);
+    if (select) {
+      select.addEventListener('change', (e) => {
+        // モーダル内の個別石選択を更新
+        updateModalIndividualStones(group, e.target.value);
+      });
+    }
+  });
+}
+
+// モーダル内の個別石選択を初期化
+function setupModalIndividualStoneSelects() {
+  // A〜Tの個別選択
+  'ABCDEFGHIJKLMNOPQRST'.split('').forEach(letter => {
+    const select = document.getElementById(`modalStoneAT_${letter}`);
+    if (select) {
+      select.addEventListener('change', (e) => {
+        // モーダル内のプレビューを更新
+        updateModalPreviewFromStones();
+      });
+    }
+  });
+  
+  // a〜dの個別選択
+  'abcd'.split('').forEach(letter => {
+    const select = document.getElementById(`modalStoneAd_${letter}`);
+    if (select) {
+      select.addEventListener('change', (e) => {
+        updateModalPreviewFromStones();
+      });
+    }
+  });
+  
+  // 1〜6の個別選択
+  [1,2,3,4,5,6].forEach(num => {
+    const select = document.getElementById(`modalStone16_${num}`);
+    if (select) {
+      select.addEventListener('change', (e) => {
+        updateModalPreviewFromStones();
+      });
+    }
+  });
+}
+
+// モーダル内の石選択オプションを更新
+function updateModalStoneSelectOptions(mainStoneValue) {
+  // すべてのモーダル内の石選択を取得
+  const allModalStoneSelects = [
+    // A〜Tの個別選択
+    ...'ABCDEFGHIJKLMNOPQRST'.split('').map(letter => ({
+      element: document.getElementById(`modalStoneAT_${letter}`),
+      type: 'AT',
+      position: letter
+    })),
+    // a〜dの個別選択
+    ...'abcd'.split('').map(letter => ({
+      element: document.getElementById(`modalStoneAd_${letter}`),
+      type: 'Ad', 
+      position: letter
+    })),
+    // 1〜6の個別選択
+    ...[1,2,3,4,5,6].map(num => ({
+      element: document.getElementById(`modalStone16_${num}`),
+      type: '16',
+      position: num
+    }))
+  ];
+  
+  // グループ設定のセレクトボックス
+  const groupSelects = [
+    { element: document.getElementById('modalGroupStoneAT'), type: 'groupAT' },
+    { element: document.getElementById('modalGroupStoneAd'), type: 'groupAd' },
+    { element: document.getElementById('modalGroupStone16'), type: 'group16' }
+  ];
+  
+  // CZ以外（天然石 + CZ または 天然石）が選択されている場合
+  if (mainStoneValue && mainStoneValue !== 'A') {
+    // 個別石選択の更新
+    allModalStoneSelects.forEach(({element, type, position}) => {
+      if (element) {
+        // オプションをクリア
+        element.innerHTML = '';
+        
+        // プレースホルダーを追加
+        const placeholderOption = document.createElement('option');
+        placeholderOption.value = '';
+        placeholderOption.textContent = '選択してください';
+        element.appendChild(placeholderOption);
+        
+        // メインストーン選択に応じて選択肢を追加
+        if (mainStoneValue === 'B') {
+          // 天然石 + CZ選択時はすべての石を表示
+          MASTER_STONES.individualStones.forEach(stone => {
+            const option = document.createElement('option');
+            option.value = stone.value;
+            option.textContent = stone.label;
+            element.appendChild(option);
+          });
+        } else if (mainStoneValue === 'C') {
+          // 天然石選択時は天然石のみ（CZ以外）
+          MASTER_STONES.individualStones.forEach(stone => {
+            if (stone.value !== 'CZ') {
+              const option = document.createElement('option');
+              option.value = stone.value;
+              option.textContent = stone.label;
+              element.appendChild(option);
+            }
+          });
+        }
+      }
+    });
+    
+    // グループ設定の更新
+    groupSelects.forEach(({element, type}) => {
+      if (element) {
+        element.innerHTML = '<option value="">選択してください</option>';
+        
+        if (mainStoneValue === 'B') {
+          MASTER_STONES.individualStones.forEach(stone => {
+            const option = document.createElement('option');
+            option.value = stone.value;
+            option.textContent = stone.label;
+            element.appendChild(option);
+          });
+        } else if (mainStoneValue === 'C') {
+          MASTER_STONES.individualStones.forEach(stone => {
+            if (stone.value !== 'CZ') {
+              const option = document.createElement('option');
+              option.value = stone.value;
+              option.textContent = stone.label;
+              element.appendChild(option);
+            }
+          });
+        }
+      }
+    });
+  }
+}
+
+// 現在の設定をモーダルにコピー
+function copyCurrentSettingsToModal() {
+  // 現在の個別石設定をモーダルにコピー
+  Object.keys(individualStoneState.stonesAT || {}).forEach(letter => {
+    const select = document.getElementById(`modalStoneAT_${letter}`);
+    if (select) {
+      select.value = individualStoneState.stonesAT[letter] || '';
+    }
+  });
+  
+  Object.keys(individualStoneState.stonesAd || {}).forEach(letter => {
+    const select = document.getElementById(`modalStoneAd_${letter}`);
+    if (select) {
+      select.value = individualStoneState.stonesAd[letter] || '';
+    }
+  });
+  
+  Object.keys(individualStoneState.stones16 || {}).forEach(num => {
+    const select = document.getElementById(`modalStone16_${num}`);
+    if (select) {
+      select.value = individualStoneState.stones16[num] || '';
+    }
+  });
+  
+  // グループ設定をデフォルトでオフに設定
+  const groupToggles = [
+    { id: 'modalGroupToggleAT', state: false },
+    { id: 'modalGroupToggleAd', state: false },
+    { id: 'modalGroupToggle16', state: false }
+  ];
+  
+  groupToggles.forEach(({ id, state }) => {
+    const toggle = document.getElementById(id);
+    if (toggle) {
+      toggle.checked = state;
+      // グループモードを更新
+      const group = id.replace('modalGroupToggle', '');
+      updateModalGroupMode(group, state);
+    }
+  });
+  
+  const groupSelects = [
+    { id: 'modalGroupStoneAT', value: '' },
+    { id: 'modalGroupStoneAd', value: '' },
+    { id: 'modalGroupStone16', value: '' }
+  ];
+  
+  groupSelects.forEach(({ id, value }) => {
+    const select = document.getElementById(id);
+    if (select) {
+      select.value = value;
+    }
+  });
+}
+
+// モーダル内のグループモードを更新
+function updateModalGroupMode(group, isGroupMode) {
+  const groupElement = document.getElementById(`modalGroupControl${group}`);
+  const individualElement = document.getElementById(`modalIndividualControl${group}`);
+  
+  if (!groupElement || !individualElement) return;
+  
+  if (isGroupMode) {
+    groupElement.style.display = 'block';
+    individualElement.style.display = 'none';
+  } else {
+    groupElement.style.display = 'none';
+    individualElement.style.display = 'block';
+  }
+  
+  // プレビューを更新
+  updateModalPreviewFromStones();
+}
+
+// モーダル内の個別石選択を更新
+function updateModalIndividualStones(group, value) {
+  // グループ選択に応じて個別選択を更新
+  if (group === 'AT') {
+    'ABCDEFGHIJKLMNOPQRST'.split('').forEach(letter => {
+      const select = document.getElementById(`modalStoneAT_${letter}`);
+      if (select) {
+        select.value = value;
+      }
+    });
+  } else if (group === 'Ad') {
+    'abcd'.split('').forEach(letter => {
+      const select = document.getElementById(`modalStoneAd_${letter}`);
+      if (select) {
+        select.value = value;
+      }
+    });
+  } else if (group === '16') {
+    [1,2,3,4,5,6].forEach(num => {
+      const select = document.getElementById(`modalStone16_${num}`);
+      if (select) {
+        select.value = value;
+      }
+    });
+  }
+  
+  // プレビューを更新
+  updateModalPreviewFromStones();
+}
+
+// モーダル内の石選択からプレビューを更新
+function updateModalPreviewFromStones() {
+  // モーダル内の石選択を取得
+  const modalStones = {
+    stonesAT: {},
+    stonesAd: {},
+    stones16: {}
+  };
+  
+  // A〜Tの個別選択
+  'ABCDEFGHIJKLMNOPQRST'.split('').forEach(letter => {
+    const select = document.getElementById(`modalStoneAT_${letter}`);
+    if (select) {
+      modalStones.stonesAT[letter] = select.value;
+    }
+  });
+  
+  // a〜dの個別選択
+  'abcd'.split('').forEach(letter => {
+    const select = document.getElementById(`modalStoneAd_${letter}`);
+    if (select) {
+      modalStones.stonesAd[letter] = select.value;
+    }
+  });
+  
+  // 1〜6の個別選択
+  [1,2,3,4,5,6].forEach(num => {
+    const select = document.getElementById(`modalStone16_${num}`);
+    if (select) {
+      modalStones.stones16[num] = select.value;
+    }
+  });
+  
+  // 現在の選択状態を取得
+  const currentSelections = {
+    body: $("bodySel") ? $("bodySel").value : '',
+    chain: $("chainSel") ? $("chainSel").value : '',
+    bail: $("bailSel") ? $("bailSel").value : '',
+    stone: $("stoneSel") ? $("stoneSel").value : ''
+  };
+  
+  // モーダルのレイヤーを更新
+  updateModalLayers({
+    ...currentSelections,
+    ...modalStones
+  });
+  
+  // モーダルのバッジも更新
+  updateModalBadges({
+    ...currentSelections,
+    ...modalStones
+  });
 }
 
 // 個別石選択のセレクトボックスを更新する関数
@@ -856,7 +1535,6 @@ function update() {
 }
 
 function init() {
-  console.log('init関数が呼び出されました');
   
   fillSelect($("bodySel"), MASTER_MATERIALS.bodies);
   fillSelect($("bailSel"), MASTER_MATERIALS.bails);
@@ -893,7 +1571,6 @@ function init() {
   setupStonePlaceholderEvents();
 
   // 初期表示を更新
-  console.log('初期表示を更新中...');
   
   // グループ設定の初期状態を設定（チェックボックスがオフなのでグループプルダウンを非表示）
   updateGroupMode('AT', false);
@@ -907,18 +1584,14 @@ function init() {
   updateStoneFormVisibility();
   
   updateStoneVisualization();
-  console.log('updateLayersを呼び出し中...');
   updateLayers();
   update();
   
   // 確実に背景画像を表示するためのフォールバック
   setTimeout(() => {
-    console.log('フォールバック処理開始');
     const container = document.getElementById('accessoryLayers');
-    console.log('フォールバック内でのコンテナ検索結果:', container);
     
     if (!container) {
-      console.log('フォールバック: コンテナが見つからないため、新しく作成');
       // コンテナが見つからない場合は新しく作成
       const newContainer = document.createElement('div');
       newContainer.id = 'accessoryLayers';
@@ -935,9 +1608,7 @@ function init() {
       backgroundImg.style.zIndex = 5;
       newContainer.appendChild(backgroundImg);
       
-      console.log('フォールバック: 新しいコンテナと背景画像を作成');
     } else if (container.children.length === 0) {
-      console.log('フォールバック: 背景画像を直接追加');
       const backgroundImg = document.createElement('img');
       backgroundImg.src = 'images/layer_5_Original.png';
       backgroundImg.alt = 'アクセサリー背景';
@@ -947,8 +1618,6 @@ function init() {
     }
   }, 100);
   
-  // ページトップボタンの初期化
-  setupPageTopButton();
   
   // スマホ用スクロール機能の初期化
   setupMobileScrollPreview();
@@ -956,7 +1625,188 @@ function init() {
   // 個別石設定の表示制御を初期化
   updateStoneFormVisibility();
   
-  console.log('init完了');
+  // モーダルのボタンイベントを設定
+  setupModalButtons();
+  
+  // ストーンモーダルボタンのイベントを設定
+  setupStoneModalButton();
+}
+
+// モーダルのボタンイベントを設定
+function setupModalButtons() {
+  const saveBtn = document.getElementById('saveStoneSettings');
+  const resetBtn = document.getElementById('resetStoneSettings');
+  const cancelBtn = document.getElementById('cancelStoneSettings');
+  
+  if (saveBtn) {
+    saveBtn.addEventListener('click', saveStoneSettings);
+  }
+  
+  if (resetBtn) {
+    resetBtn.addEventListener('click', resetStoneSettings);
+  }
+  
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', cancelStoneSettings);
+  }
+}
+
+// ストーン設定を保存
+function saveStoneSettings() {
+  // モーダル内の設定をメインの設定にコピー
+  copyModalSettingsToMain();
+  
+  // メインのプレビューを更新
+  updateLayers();
+  
+  // モーダルを非表示
+  hideStoneModal();
+}
+
+// ストーン設定をリセット
+function resetStoneSettings() {
+  // モーダル内の個別石選択をすべてクリア
+  clearModalStoneSettings();
+  
+  // モーダルのプレビューを更新
+  updateModalPreviewFromStones();
+}
+
+// ストーン設定をキャンセル
+function cancelStoneSettings() {
+  // 元の状態に復元
+  if (modalOriginalState) {
+    Object.assign(individualStoneState, modalOriginalState);
+  }
+  
+  // メインのプレビューを更新
+  updateLayers();
+  
+  // モーダルを非表示
+  hideStoneModal();
+}
+
+// モーダル内の設定をメインの設定にコピー
+function copyModalSettingsToMain() {
+  // 個別石設定をコピー
+  individualStoneState.stonesAT = {};
+  individualStoneState.stonesAd = {};
+  individualStoneState.stones16 = {};
+  
+  // A〜Tの個別選択
+  'ABCDEFGHIJKLMNOPQRST'.split('').forEach(letter => {
+    const select = document.getElementById(`modalStoneAT_${letter}`);
+    if (select && select.value) {
+      individualStoneState.stonesAT[letter] = select.value;
+    }
+  });
+  
+  // a〜dの個別選択
+  'abcd'.split('').forEach(letter => {
+    const select = document.getElementById(`modalStoneAd_${letter}`);
+    if (select && select.value) {
+      individualStoneState.stonesAd[letter] = select.value;
+    }
+  });
+  
+  // 1〜6の個別選択
+  [1,2,3,4,5,6].forEach(num => {
+    const select = document.getElementById(`modalStone16_${num}`);
+    if (select && select.value) {
+      individualStoneState.stones16[num] = select.value;
+    }
+  });
+  
+  // グループ設定をコピー
+  individualStoneState.groupAT = document.getElementById('modalGroupToggleAT')?.checked || false;
+  individualStoneState.groupAd = document.getElementById('modalGroupToggleAd')?.checked || false;
+  individualStoneState.group16 = document.getElementById('modalGroupToggle16')?.checked || false;
+  
+  individualStoneState.groupStoneAT = document.getElementById('modalGroupStoneAT')?.value || '';
+  individualStoneState.groupStoneAd = document.getElementById('modalGroupStoneAd')?.value || '';
+  individualStoneState.groupStone16 = document.getElementById('modalGroupStone16')?.value || '';
+}
+
+// 石設定のデータをクリア
+function clearStoneSettings() {
+  individualStoneState.stonesAT = {};
+  individualStoneState.stonesAd = {};
+  individualStoneState.stones16 = {};
+  individualStoneState.groupAT = false;
+  individualStoneState.groupAd = false;
+  individualStoneState.group16 = false;
+  individualStoneState.groupStoneAT = '';
+  individualStoneState.groupStoneAd = '';
+  individualStoneState.groupStone16 = '';
+}
+
+// モーダル内の石選択をクリア
+function clearModalStoneSettings() {
+  // A〜Tの個別選択をクリア
+  'ABCDEFGHIJKLMNOPQRST'.split('').forEach(letter => {
+    const select = document.getElementById(`modalStoneAT_${letter}`);
+    if (select) {
+      select.value = '';
+    }
+  });
+  
+  // a〜dの個別選択をクリア
+  'abcd'.split('').forEach(letter => {
+    const select = document.getElementById(`modalStoneAd_${letter}`);
+    if (select) {
+      select.value = '';
+    }
+  });
+  
+  // 1〜6の個別選択をクリア
+  [1,2,3,4,5,6].forEach(num => {
+    const select = document.getElementById(`modalStone16_${num}`);
+    if (select) {
+      select.value = '';
+    }
+  });
+  
+  // グループ設定をオフに設定
+  const groupToggles = [
+    { id: 'modalGroupToggleAT', state: false },
+    { id: 'modalGroupToggleAd', state: false },
+    { id: 'modalGroupToggle16', state: false }
+  ];
+  
+  groupToggles.forEach(({ id, state }) => {
+    const toggle = document.getElementById(id);
+    if (toggle) {
+      toggle.checked = state;
+      // グループモードを更新
+      const group = id.replace('modalGroupToggle', '');
+      updateModalGroupMode(group, state);
+    }
+  });
+  
+  // グループ選択をクリア
+  const groupSelects = [
+    { id: 'modalGroupStoneAT', value: '' },
+    { id: 'modalGroupStoneAd', value: '' },
+    { id: 'modalGroupStone16', value: '' }
+  ];
+  
+  groupSelects.forEach(({ id, value }) => {
+    const select = document.getElementById(id);
+    if (select) {
+      select.value = value;
+    }
+  });
+}
+
+// ストーンモーダルボタンのイベントを設定
+function setupStoneModalButton() {
+  const stoneModalBtn = document.getElementById('stoneModalBtn');
+  
+  if (stoneModalBtn) {
+    stoneModalBtn.addEventListener('click', () => {
+      showStoneModal();
+    });
+  }
 }
 
 // スマホ用スクロール機能
@@ -965,87 +1815,43 @@ function setupMobileScrollPreview() {
   let preview = document.querySelector('.preview');
   let priceBox = document.querySelector('.priceBox');
   
-  console.log('setupMobileScrollPreview関数が呼び出されました');
-  console.log('preview要素:', preview);
-  console.log('priceBox要素:', priceBox);
-  
   if (!preview) {
-    // 代替方法で要素を取得
     preview = document.querySelector('.grid > div:first-child');
-    console.log('代替方法でpreview要素を取得:', preview);
   }
   
   if (!priceBox) {
-    // 代替方法でpriceBox要素を取得
     priceBox = document.querySelector('.priceBox, [class*="price"]');
-    console.log('代替方法でpriceBox要素を取得:', priceBox);
   }
   
   if (!preview) {
-    console.log('preview要素が見つかりません');
     return;
   }
   
-  // 初期状態のスタイルを確認
-  const computedStyle = window.getComputedStyle(preview);
-  console.log('初期状態のpreviewスタイル:', {
-    position: computedStyle.position,
-    top: computedStyle.top,
-    left: computedStyle.left,
-    width: computedStyle.width,
-    height: computedStyle.height,
-    transform: computedStyle.transform
-  });
-  
-  if (priceBox) {
-    const priceBoxStyle = window.getComputedStyle(priceBox);
-    console.log('初期状態のpriceBoxスタイル:', {
-      position: priceBoxStyle.position,
-      top: priceBoxStyle.top,
-      left: priceBoxStyle.left,
-      width: priceBoxStyle.width,
-      height: priceBoxStyle.height,
-      transform: priceBoxStyle.transform
-    });
-  }
-  
   let isScrolled = false;
+  const thresholdEnter = 80;  // フローティングに入る閾値
+  
   
   // スクロールイベントリスナー
   function handleScroll() {
     const scrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
     const screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth || 0;
     
-    console.log(`スクロール位置: ${scrollY}, 画面幅: ${screenWidth}, isScrolled: ${isScrolled}`);
-    
     // スマホ・タブレットサイズ（1024px以下）で動作
     if (screenWidth <= 1024) {
-      console.log('スマホ・タブレットサイズでの処理');
-      if (scrollY > 50 && !isScrolled) {
-        // スクロール時：プレビューを左上、priceBoxを右上に縮小表示
-        // Preview要素の処理
+      if (scrollY >= thresholdEnter && !isScrolled) {
         preview.classList.add('scrolled');
-        
-        // PriceBox要素の処理
         if (priceBox) {
           priceBox.classList.add('scrolled');
         }
-        
         isScrolled = true;
-        console.log('プレビューとpriceBoxを縮小表示');
-      } else if (scrollY <= 50 && isScrolled) {
-        // ページトップ時：元の位置とサイズに戻す
+      } else if (scrollY === 0 && isScrolled) {
         preview.classList.remove('scrolled');
-        
         if (priceBox) {
           priceBox.classList.remove('scrolled');
         }
-        
         isScrolled = false;
-        console.log('プレビューとpriceBoxを元の位置・サイズに復元');
       }
     } else {
-      console.log('デスクトップ・iPad以上のサイズ');
       // デスクトップ・iPad以上のサイズではクラスとスタイルを削除
       if (isScrolled) {
         preview.classList.remove('scrolled');
@@ -1057,83 +1863,19 @@ function setupMobileScrollPreview() {
     }
   }
   
-  // 複数のスクロールイベントリスナーを追加
+  // スクロールイベントリスナーを追加
   window.addEventListener('scroll', handleScroll, { passive: true });
-  document.addEventListener('scroll', handleScroll, { passive: true });
-  document.body.addEventListener('scroll', handleScroll, { passive: true });
-  document.documentElement.addEventListener('scroll', handleScroll, { passive: true });
-  
-  // タッチスクロール対応（iOS Safari）
-  window.addEventListener('touchmove', handleScroll, { passive: true });
-  
-  console.log('スクロールイベントリスナーを追加しました');
-  
-  // リサイズイベントリスナーを追加
-  window.addEventListener('resize', () => {
-    const screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth || 0;
-    if (screenWidth > 1024 && isScrolled) {
-      // タブレット以上のサイズになった場合はスタイルをリセット
-      preview.classList.remove('scrolled');
-      if (priceBox) {
-        priceBox.classList.remove('scrolled');
-      }
-      isScrolled = false;
-    } else if (screenWidth <= 1024 && isScrolled) {
-      // スマホ・タブレットサイズ内でリサイズされた場合は再適用
-      handleScroll();
-    }
-  });
-  
+
   // 初期状態を確認
   handleScroll();
-  console.log('setupMobileScrollPreview関数の初期化完了');
-  
-  // デバッグ用：定期的にスクロール位置を確認
-  setInterval(() => {
-    const scrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
-    const screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth || 0;
-    if (screenWidth <= 1024) {
-      console.log(`定期確認 - スクロール位置: ${scrollY}, 画面幅: ${screenWidth}, isScrolled: ${isScrolled}`);
-    }
-  }, 2000);
-  
-  // デバッグ用：グローバル関数として公開
-  window.testScrollPreview = () => {
-    console.log('テスト用：強制的にプレビューとpriceBoxを縮小表示');
-    const screenWidth = window.innerWidth;
-    
-    preview.classList.add('scrolled');
-    
-    if (priceBox) {
-      priceBox.classList.add('scrolled');
-    }
-    
-    isScrolled = true;
-  };
-  
-  window.resetScrollPreview = () => {
-    console.log('テスト用：プレビューとpriceBoxを元に戻す');
-    preview.classList.remove('scrolled');
-    
-    if (priceBox) {
-      priceBox.classList.remove('scrolled');
-    }
-    
-    isScrolled = false;
-  };
 }
 
 // レイヤー表示を更新
 function updateLayers() {
-  console.log('updateLayers関数が呼び出されました');
-  
   const container = document.getElementById('accessoryLayers');
   if (!container) {
-    console.log('accessoryLayersコンテナが見つかりません');
     return;
   }
-
-  console.log('コンテナが見つかりました:', container);
 
   // 現在の選択状態を取得
   const selections = {
@@ -1145,7 +1887,6 @@ function updateLayers() {
     stones16: individualStoneState.stones16 || {}
   };
 
-  console.log('現在の選択状態:', selections);
 
   // グループ設定が有効な場合の処理
   if (individualStoneState.groupAT && individualStoneState.groupStoneAT) {
@@ -1170,163 +1911,23 @@ function updateLayers() {
     num16.forEach(num => {
       selections.stones16[num] = individualStoneState.groupStone16;
     });
-    console.log('バチカングループ設定適用:', selections.stones16);
   }
 
   // アクティブなレイヤーを取得
   const activeLayers = getActiveLayers(selections);
   
-  console.log('Active layers:', activeLayers);
-  
   // コンテナをクリア
   container.innerHTML = '';
   
-  // レイヤー画像を追加
-  activeLayers.forEach((layer, index) => {
-    console.log(`レイヤー${index + 1}を追加:`, layer);
-    
-    const img = document.createElement('img');
-    img.src = layer.image;
-    img.alt = 'アクセサリーレイヤー';
-    img.className = 'layer-image';
-    // layer番号が小さいほど前面に表示（z-indexを逆転）
-    img.style.zIndex = 10 - layer.layer;
-    
-    // 石の画像の場合は透過度を調整（背景画像は不透明）
-    if (layer.layer === 4) { // layer-4は石類
-      img.style.opacity = '0.8'; // 少し透過させる
-    } else {
-      img.style.opacity = '1.0'; // 完全に不透明
-    }
-    
-    // 画像読み込みエラーの処理
-    img.onerror = function() {
-      console.log('画像読み込みエラー:', this.src);
-      // 画像が読み込めない場合は非表示にする
-      this.style.display = 'none';
-    };
-    
-    // 画像読み込み成功時のログ
-    img.onload = function() {
-      console.log('画像読み込み成功:', this.src);
-    };
-    
+  // レイヤー画像を追加（レイヤー番号の小さい順にソート）
+  activeLayers.sort((a, b) => a.layer - b.layer).forEach((layer, index) => {
+    const img = createLayerImage(layer, index);
     container.appendChild(img);
   });
   
-  console.log('レイヤー追加完了。総数:', activeLayers.length);
 }
 
-console.log('スクリプトが読み込まれました');
 
-// ページトップボタンの機能
-function setupPageTopButton() {
-  const pageTopBtn = document.getElementById('pageTopBtn');
-  
-  if (!pageTopBtn) return;
-  
-  // ページトップに移動する関数
-  const scrollToTop = () => {
-    console.log('ページトップボタンがクリックされました');
-    
-    // 複数の方法でスクロールを試行
-    try {
-      // 方法1: 即座にトップに移動（複数の方法）
-      window.scrollTo(0, 0);
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
-      
-      // 方法2: 強制的にトップに移動
-      if (document.documentElement.scrollTop > 0) {
-        document.documentElement.scrollTop = 0;
-      }
-      if (document.body.scrollTop > 0) {
-        document.body.scrollTop = 0;
-      }
-      
-      console.log('スクロール実行: window.scrollTo(0, 0)');
-      console.log('現在のスクロール位置:', window.pageYOffset, document.documentElement.scrollTop, document.body.scrollTop);
-      
-      // 方法3: スムーズスクロールを試行
-      setTimeout(() => {
-        if (window.scrollTo && 'scrollBehavior' in document.documentElement.style) {
-          window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-          });
-          console.log('スムーズスクロール実行');
-        } else {
-          // 方法4: アニメーション付きスクロール
-          const smoothScrollToTop = () => {
-            const currentPosition = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
-            console.log('現在のスクロール位置:', currentPosition);
-            
-            if (currentPosition > 0) {
-              const newPosition = Math.max(0, currentPosition - currentPosition / 8);
-              window.scrollTo(0, newPosition);
-              document.documentElement.scrollTop = newPosition;
-              document.body.scrollTop = newPosition;
-              setTimeout(smoothScrollToTop, 16);
-            } else {
-              console.log('スクロール完了');
-            }
-          };
-          smoothScrollToTop();
-        }
-      }, 100);
-      
-      // 方法5: 最終確認（強制的に0に設定）
-      setTimeout(() => {
-        window.scrollTo(0, 0);
-        document.documentElement.scrollTop = 0;
-        document.body.scrollTop = 0;
-        console.log('最終確認スクロール実行');
-      }, 200);
-      
-    } catch (error) {
-      console.error('スクロールエラー:', error);
-    }
-  };
-
-  // クリックイベント
-  pageTopBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    scrollToTop();
-  });
-
-  // タッチイベント（モバイル対応）
-  pageTopBtn.addEventListener('touchend', (e) => {
-    e.preventDefault();
-    scrollToTop();
-  });
-  
-  // スクロール位置に応じてボタンの表示/非表示を制御
-  function togglePageTopButton() {
-    const screenWidth = window.innerWidth;
-    
-    // スマホ・タブレット（1024px以下）では常に表示
-    if (screenWidth <= 1024) {
-      pageTopBtn.style.display = 'flex';
-    } else {
-      // iPad以上ではスクロール位置に応じて表示/非表示
-      if (window.scrollY > 300) {
-        pageTopBtn.style.display = 'flex';
-      } else {
-        pageTopBtn.style.display = 'none';
-      }
-    }
-  }
-  
-  // スクロールイベントリスナー
-  window.addEventListener('scroll', togglePageTopButton);
-  
-  // リサイズイベントリスナー
-  window.addEventListener('resize', togglePageTopButton);
-  
-  // 初期状態を設定
-  togglePageTopButton();
-}
 document.addEventListener("DOMContentLoaded", function() {
-  console.log('DOMContentLoadedイベントが発火しました');
   init();
 });

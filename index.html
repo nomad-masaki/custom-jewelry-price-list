@@ -34,7 +34,7 @@
               </div>
             </div>
             <div class="priceBox">
-              <div class="row"><span class="label">SKU</span><span class="value mono" id="skuText">-</span></div>
+              <div class="row"><span class="label">商品コード</span><span class="value mono" id="skuText">-</span></div>
               <div class="row"><span class="label">上代（税抜き）</span><span class="value big" id="priceText">パーツを選択すると金額が表示されます</span></div>
               <div class="row" style="display: none;"><span class="label">内税（10%）</span><span class="value" id="taxText">-</span></div>
             </div>
@@ -43,89 +43,77 @@
           <div class="controls">
             <div class="main-selection-grid">
               <div class="field">
-                <label for="bodySel">本体（1〜8）</label>
+                <label for="bodySel">本体</label>
                 <select id="bodySel"></select>
               </div>
               <div class="field">
-                <label for="bailSel">バチカン（1〜8）</label>
+                <label for="bailSel">バチカン</label>
                 <select id="bailSel"></select>
               </div>
               <div class="field">
-                <label for="chainSel">チェーン（1〜8）</label>
+                <label for="chainSel">チェーン</label>
                 <select id="chainSel"></select>
               </div>
               <div class="field">
-                <label for="stoneSel">ストーン（A〜C）</label>
+                <label for="stoneSel">ストーン</label>
                 <select id="stoneSel"></select>
+                <button id="stoneModalBtn" class="btn primary" style="display: none; margin-top: 8px;">
+                  ストーン詳細設定
+                </button>
               </div>
             </div>
             
-            <!-- 個別石設定セクション -->
-            <div id="individualStoneSection" class="individual-stone-section stone-settings" style="display: none;">
-              <div class="section-header">
-                <h3>個別石設定</h3>
-                <div class="group-settings">
-                  <label class="toggle-label">
-                    <input type="checkbox" id="groupToggleAT" />
-                    <span class="toggle-text">たてがみ グループ設定</span>
-                  </label>
-                  <label class="toggle-label">
-                    <input type="checkbox" id="groupToggleAd" />
-                    <span class="toggle-text">目 ＆ 牙 グループ設定</span>
-                  </label>
-                  <label class="toggle-label">
-                    <input type="checkbox" id="groupToggle16" />
-                    <span class="toggle-text">バチカン グループ設定</span>
-                  </label>
-                </div>
+            <!-- 石選択コンポーネント -->
+            <div id="individualStoneSection" class="stone-selection-component" style="display: none;">
+              <div class="group-settings">
+                <label class="toggle-label">
+                  <input type="checkbox" id="groupToggleAT" />
+                  <span class="toggle-text">たてがみ グループ設定</span>
+                </label>
+                <label class="toggle-label">
+                  <input type="checkbox" id="groupToggleAd" />
+                  <span class="toggle-text">目＆牙グループ設定</span>
+                </label>
+                <label class="toggle-label">
+                  <input type="checkbox" id="groupToggle16" />
+                  <span class="toggle-text">バチカングループ設定</span>
+                </label>
               </div>
               
-              <div class="stone-groups-layout">
-                <!-- 左列：たてがみ（A〜T） -->
-                <div class="stone-group-left">
-                  <div class="stone-group">
-                    <h4>たてがみ（A〜T）</h4>
-                    <div class="group-controls" id="groupControlAT">
-                      <select id="groupStoneAT" class="group-select">
-                        <option value="">選択してください</option>
-                      </select>
-                    </div>
-                    <div class="individual-controls" id="individualControlAT">
-                      <div class="stone-grid mane-grid">
-                        <!-- A〜Tの個別設定 -->
-                      </div>
-                    </div>
+              <div class="stone-selection-content">
+                <h4>たてがみ（A〜T）</h4>
+                <div class="group-controls" id="groupControlAT">
+                  <select id="groupStoneAT" class="group-select">
+                    <option value="">選択してください</option>
+                  </select>
+                </div>
+                <div class="individual-controls" id="individualControlAT">
+                  <div class="stone-grid mane-grid">
+                    <!-- A〜Tの個別設定 -->
                   </div>
                 </div>
 
-                <!-- 右列：目＆牙（a〜d）とバチカン（1〜6）を縦積み -->
-                <div class="stone-group-right">
-                  <div class="stone-group">
-                    <h4>目 ＆ 牙（a〜d）</h4>
-                    <div class="group-controls" id="groupControlAd">
-                      <select id="groupStoneAd" class="group-select">
-                        <option value="">選択してください</option>
-                      </select>
-                    </div>
-                    <div class="individual-controls" id="individualControlAd">
-                      <div class="stone-grid eye-tooth-grid">
-                        <!-- a〜dの個別設定 -->
-                      </div>
-                    </div>
+                <h4>目＆牙（a〜d）</h4>
+                <div class="group-controls" id="groupControlAd">
+                  <select id="groupStoneAd" class="group-select">
+                    <option value="">選択してください</option>
+                  </select>
+                </div>
+                <div class="individual-controls" id="individualControlAd">
+                  <div class="stone-grid eye-tooth-grid">
+                    <!-- a〜dの個別設定 -->
                   </div>
+                </div>
 
-                  <div class="stone-group">
-                    <h4>バチカン（1〜6）</h4>
-                    <div class="group-controls" id="groupControl16">
-                      <select id="groupStone16" class="group-select">
-                        <option value="">選択してください</option>
-                      </select>
-                    </div>
-                    <div class="individual-controls" id="individualControl16">
-                      <div class="stone-grid vatican-grid">
-                        <!-- 1〜6の個別設定 -->
-                      </div>
-                    </div>
+                <h4>バチカン（1〜6）</h4>
+                <div class="group-controls" id="groupControl16">
+                  <select id="groupStone16" class="group-select">
+                    <option value="">選択してください</option>
+                  </select>
+                </div>
+                <div class="individual-controls" id="individualControl16">
+                  <div class="stone-grid vatican-grid">
+                    <!-- 1〜6の個別設定 -->
                   </div>
                 </div>
               </div>
@@ -135,12 +123,83 @@
       </div>
     </div>
 
-    <!-- ページトップボタン -->
-    <button id="pageTopBtn" class="page-top-btn" aria-label="ページトップに戻る">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 4L4 12H8V20H16V12H20L12 4Z" fill="currentColor"/>
-      </svg>
-    </button>
+    <!-- ストーン設定モーダル -->
+    <div id="stoneModal" class="stone-modal" style="display: none;">
+      <div class="stone-modal-content">
+        <!-- プレビューエリア（5割） -->
+        <div class="stone-modal-preview">
+          <div class="preview">
+            <div class="accessory-layers-container" id="modalAccessoryLayers">
+              <!-- レイヤー画像が動的に追加される -->
+            </div>
+          </div>
+        </div>
+        
+        <!-- 石選択エリア（4割） -->
+        <div class="stone-modal-selection">
+          <div class="group-settings">
+            <label class="toggle-label">
+              <input type="checkbox" id="modalGroupToggleAT" />
+              <span class="toggle-text">たてがみ グループ設定</span>
+            </label>
+            <label class="toggle-label">
+              <input type="checkbox" id="modalGroupToggleAd" />
+              <span class="toggle-text">目＆牙グループ設定</span>
+            </label>
+            <label class="toggle-label">
+              <input type="checkbox" id="modalGroupToggle16" />
+              <span class="toggle-text">バチカングループ設定</span>
+            </label>
+          </div>
+          
+          <div class="stone-selection-content">
+            <h4>たてがみ（A〜T）</h4>
+            <div class="group-controls" id="modalGroupControlAT">
+              <select id="modalGroupStoneAT" class="group-select">
+                <option value="">選択してください</option>
+              </select>
+            </div>
+            <div class="individual-controls" id="modalIndividualControlAT">
+              <div class="stone-grid mane-grid">
+                <!-- A〜Tの個別設定 -->
+              </div>
+            </div>
+
+            <h4>目＆牙（a〜d）</h4>
+            <div class="group-controls" id="modalGroupControlAd">
+              <select id="modalGroupStoneAd" class="group-select">
+                <option value="">選択してください</option>
+              </select>
+            </div>
+            <div class="individual-controls" id="modalIndividualControlAd">
+              <div class="stone-grid eye-tooth-grid">
+                <!-- a〜dの個別設定 -->
+              </div>
+            </div>
+
+            <h4>バチカン（1〜6）</h4>
+            <div class="group-controls" id="modalGroupControl16">
+              <select id="modalGroupStone16" class="group-select">
+                <option value="">選択してください</option>
+              </select>
+            </div>
+            <div class="individual-controls" id="modalIndividualControl16">
+              <div class="stone-grid vatican-grid">
+                <!-- 1〜6の個別設定 -->
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ボタンエリア（1割） -->
+        <div class="stone-modal-buttons">
+          <button id="saveStoneSettings" class="btn success">保存</button>
+          <button id="resetStoneSettings" class="btn primary">リセット</button>
+          <button id="cancelStoneSettings" class="btn secondary">キャンセル</button>
+        </div>
+      </div>
+    </div>
+
 
     <script src="javascript/master/price_table.js"></script>
     <script src="javascript/master/master_materials.js"></script>
