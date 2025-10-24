@@ -13,7 +13,7 @@ const MASTER_MATERIALS = {
     { value: "5", label: "K18YG" },
     { value: "6", label: "K18PG" },
     { value: "7", label: "K18WG" },
-    { value: "8", label: "Pt900" },
+    { value: "8", label: "PT900" },
   ],
   
   // バチカン素材
@@ -25,7 +25,7 @@ const MASTER_MATERIALS = {
     { value: "5", label: "K18YG" },
     { value: "6", label: "K18PG" },
     { value: "7", label: "K18WG" },
-    { value: "8", label: "Pt900" },
+    { value: "8", label: "PT900" },
   ],
   
   // チェーン素材
@@ -37,7 +37,7 @@ const MASTER_MATERIALS = {
     { value: "5", label: "K18YG" },
     { value: "6", label: "K18PG" },
     { value: "7", label: "K18WG" },
-    { value: "9", label: "Pt850" },
+    { value: "9", label: "PT850" },
   ],
   
   // 基本ストーン設定

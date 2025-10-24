@@ -157,6 +157,7 @@ class ImageCache {
       "images/layer-3/layer_3_body_K18YG.png",
       "images/layer-3/layer_3_body_K18PG.png",
       "images/layer-3/layer_3_body_SV925.png",
+      "images/layer-3/layer_3_body_PT900.png",
       // よく使用されるチェーン
       "images/layer-1/layer_1_chain_K18YG.png",
       "images/layer-1/layer_1_chain_K18PG.png",
@@ -165,6 +166,7 @@ class ImageCache {
       "images/layer-2/layer_2_bail_K18YG.png",
       "images/layer-2/layer_2_bail_K18PG.png",
       "images/layer-2/layer_2_bail_SV925.png",
+      "images/layer-2/layer_2_bail_PT900.png",
       // 石画像（よく使用される）- 実際のファイル名に修正
       "images/layer-4/layer_4_mane_A_cz.png",
       "images/layer-4/layer_4_mane_plain.png",

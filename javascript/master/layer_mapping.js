@@ -30,7 +30,7 @@ const LAYER_MAPPING = {
     "5": { layer: LAYER_ORDER.LAYER_3, image: "images/layer-3/layer_3_body_K18YG.png" },
     "6": { layer: LAYER_ORDER.LAYER_3, image: "images/layer-3/layer_3_body_K18PG.png" },
     "7": { layer: LAYER_ORDER.LAYER_3, image: "images/layer-3/layer_3_body_K18WG.png" },
-    "8": { layer: LAYER_ORDER.LAYER_3, image: "images/layer-3/layer_3_body_Pt900.png" }
+    "8": { layer: LAYER_ORDER.LAYER_3, image: "images/layer-3/layer_3_body_PT900.png" }
   },
   
   // layer-1: チェーン（最前面）
@@ -42,7 +42,7 @@ const LAYER_MAPPING = {
     "5": { layer: LAYER_ORDER.LAYER_1, image: "images/layer-1/layer_1_chain_K18YG.png" },
     "6": { layer: LAYER_ORDER.LAYER_1, image: "images/layer-1/layer_1_chain_K18PG.png" },
     "7": { layer: LAYER_ORDER.LAYER_1, image: "images/layer-1/layer_1_chain_K18WG.png" },
-    "8": { layer: LAYER_ORDER.LAYER_1, image: "images/layer-1/layer_1_chain_PT850.png" }
+    "9": { layer: LAYER_ORDER.LAYER_1, image: "images/layer-1/layer_1_chain_PT850.png" }
   },
   
   // layer-2: バチカン
@@ -54,7 +54,7 @@ const LAYER_MAPPING = {
     "5": { layer: LAYER_ORDER.LAYER_2, image: "images/layer-2/layer_2_bail_K18YG.png" },
     "6": { layer: LAYER_ORDER.LAYER_2, image: "images/layer-2/layer_2_bail_K18PG.png" },
     "7": { layer: LAYER_ORDER.LAYER_2, image: "images/layer-2/layer_2_bail_K18WG.png" },
-    "8": { layer: LAYER_ORDER.LAYER_2, image: "images/layer-2/layer_2_bail_Pt900.png" }
+    "8": { layer: LAYER_ORDER.LAYER_2, image: "images/layer-2/layer_2_bail_PT900.png" }
   },
   
   // layer-4: 石類（目、牙、たてがみ、バチカン石）
