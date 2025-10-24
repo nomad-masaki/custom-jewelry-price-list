@@ -498,3 +498,46 @@ body {
   font-size: 16px;
   font-weight: 600;
 }
+
+/* ============================================================================
+   画像読み込み最適化関連のスタイル
+   ============================================================================ */
+
+/* ローディングアニメーション */
+@keyframes spin {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.loading-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* レイヤーコンテナの最適化 */
+.layer-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.layer-image {
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* 画像読み込み中のフェード効果 */
+.layer-image[src=""] {
+  opacity: 0;
+}
+
+/* プリロード完了時のフェードイン効果 */
+.layer-image.loaded {
+  opacity: 1;
+}

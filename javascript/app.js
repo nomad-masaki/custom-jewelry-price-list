@@ -40,6 +40,100 @@ const Utils = {
   clearObject: (obj) => Object.keys(obj).forEach(key => delete obj[key])
 };
 
+// ============================================================================
+// 画像プリロード・キャッシュ管理クラス
+// ============================================================================
+
+class ImageCache {
+  constructor() {
+    this.cache = new Map();
+    this.loadingPromises = new Map();
+    this.preloadedImages = new Set();
+  }
+
+  // 画像をプリロード
+  async preloadImage(src) {
+    if (this.cache.has(src)) {
+      return this.cache.get(src);
+    }
+
+    if (this.loadingPromises.has(src)) {
+      return this.loadingPromises.get(src);
+    }
+
+    const promise = new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        this.cache.set(src, img);
+        this.preloadedImages.add(src);
+        resolve(img);
+      };
+      img.onerror = () => {
+        this.loadingPromises.delete(src);
+        reject(new Error(`Failed to load image: ${src}`));
+      };
+      img.src = src;
+    });
+
+    this.loadingPromises.set(src, promise);
+    return promise;
+  }
+
+  // 複数画像を並列プリロード
+  async preloadImages(srcs) {
+    const promises = srcs.map(src => 
+      this.preloadImage(src).catch(error => {
+        // エラーをコンソールに出力せずに無視
+        return null;
+      })
+    );
+    return Promise.all(promises);
+  }
+
+  // 画像を取得（キャッシュから）
+  getImage(src) {
+    return this.cache.get(src);
+  }
+
+  // 画像がプリロード済みかチェック
+  isPreloaded(src) {
+    return this.preloadedImages.has(src);
+  }
+
+  // よく使用される画像をプリロード
+  async preloadCommonImages() {
+    const commonImages = [
+      // 背景画像
+      "images/layer_5_Original.png",
+      // よく使用される本体素材
+      "images/layer-3/layer_3_body_K18YG.png",
+      "images/layer-3/layer_3_body_K18PG.png",
+      "images/layer-3/layer_3_body_SV925.png",
+      // よく使用されるチェーン
+      "images/layer-1/layer_1_chain_K18YG.png",
+      "images/layer-1/layer_1_chain_K18PG.png",
+      "images/layer-1/layer_1_chain_SV925.png",
+      // よく使用されるバチカン
+      "images/layer-2/layer_2_bail_K18YG.png",
+      "images/layer-2/layer_2_bail_K18PG.png",
+      "images/layer-2/layer_2_bail_SV925.png",
+      // 石画像（よく使用される）- 実際のファイル名に修正
+      "images/layer-4/layer_4_mane_A_cz.png",
+      "images/layer-4/layer_4_mane_plain.png",
+      "images/layer-4/layer_4_eye_L_cz.png",
+      "images/layer-4/layer_4_eye_R_cz.png",
+      "images/layer-4/layer_4_tooth_L_cz.png",
+      "images/layer-4/layer_4_tooth_R_cz.png"
+    ];
+
+    // プリロードを実行（エラーは無視）
+    await this.preloadImages(commonImages);
+  }
+}
+
+// グローバル画像キャッシュインスタンス
+const imageCache = new ImageCache();
+
 
 // ============================================================================
 // 石選択管理クラス
@@ -111,34 +205,93 @@ function fillSelect(el, items) {
   el.innerHTML = `<option value="">選択してください</option>` + items.map(it => `<option value="${it.value}">${it.label}</option>`).join("");
 }
 
-// レイヤー画像を作成する共通関数
+// レイヤー画像を作成する共通関数（最適化版）
 function createLayerImage(layer, index) {
+  const container = document.createElement('div');
+  container.className = 'layer-container';
+  container.style.position = 'absolute';
+  container.style.top = '0';
+  container.style.left = '0';
+  container.style.width = '100%';
+  container.style.height = '100%';
+  container.style.zIndex = CONSTANTS.LAYER_Z_INDEX_BASE - layer.layer;
+
+  // ローディングインジケーター
+  const loadingIndicator = document.createElement('div');
+  loadingIndicator.className = 'loading-indicator';
+  loadingIndicator.style.cssText = `
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  `;
+  container.appendChild(loadingIndicator);
+
   const img = document.createElement('img');
-  img.src = layer.image;
   img.alt = 'アクセサリーレイヤー';
   img.className = 'layer-image';
-  img.style.position = 'absolute';
-  img.style.top = '0';
-  img.style.left = '0';
-  img.style.width = '100%';
-  img.style.height = '100%';
-  img.style.objectFit = 'contain';
-  // レイヤー番号が小さいほど前面に表示（z-indexを逆順にする）
-  img.style.zIndex = CONSTANTS.LAYER_Z_INDEX_BASE - layer.layer;
-  
-  // 石の画像の場合は透過度を調整（背景画像は不透明）
-  if (layer.layer === 4) { // layer-4は石類
-    img.style.opacity = '0.8'; // 少し透過させる
+  img.style.cssText = `
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+  `;
+
+  // 石の画像の場合は透過度を調整
+  if (layer.layer === 4) {
+    img.style.opacity = '0.8';
   } else {
-    img.style.opacity = '1.0'; // 完全に不透明
+    img.style.opacity = '1.0';
   }
-  
+
+  container.appendChild(img);
+
+  // 画像読み込み処理（キャッシュ活用）
+  const loadImage = async () => {
+    try {
+      // キャッシュから取得を試行
+      const cachedImg = imageCache.getImage(layer.image);
+      if (cachedImg) {
+        img.src = cachedImg.src;
+        img.onload();
+        return;
+      }
+
+      // プリロードを試行
+      await imageCache.preloadImage(layer.image);
+      img.src = layer.image;
+    } catch (error) {
+      // プリロードに失敗した場合は直接読み込み
+      img.src = layer.image;
+    }
+  };
+
+  // 画像読み込み完了時の処理
+  img.onload = function() {
+    loadingIndicator.style.display = 'none';
+    img.style.opacity = layer.layer === 4 ? '0.8' : '1.0';
+  };
+
   // 画像読み込みエラーの処理
   img.onerror = function() {
-    this.style.display = 'none';
+    loadingIndicator.style.display = 'none';
+    container.style.display = 'none';
   };
-  
-  return img;
+
+  // 画像読み込み開始
+  loadImage();
+
+  return container;
 }
 
 function keyOf(b, k, c, s) { 
@@ -259,7 +412,7 @@ function updateGroupMode(group, isGroupMode) {
   }
   
   // レイヤー表示を更新
-  updateLayers();
+  updateLayers().catch(() => {}); // エラーは無視
 }
 
 // グループ石選択の制御
@@ -273,19 +426,19 @@ function setupGroupStoneSelects() {
   $('groupStoneAT').addEventListener('change', (e) => {
     stoneManager.state.groupStoneAT = e.target.value;
     updateIndividualStones();
-    updateLayers(); // レイヤー表示を即座に更新
+    updateLayers().catch(() => {}); // エラーは無視 // レイヤー表示を即座に更新
   });
 
   $('groupStoneAd').addEventListener('change', (e) => {
     stoneManager.state.groupStoneAd = e.target.value;
     updateIndividualStones();
-    updateLayers(); // レイヤー表示を即座に更新
+    updateLayers().catch(() => {}); // エラーは無視 // レイヤー表示を即座に更新
   });
 
   $('groupStone16').addEventListener('change', (e) => {
     stoneManager.state.groupStone16 = e.target.value;
     updateIndividualStones();
-    updateLayers(); // レイヤー表示を即座に更新
+    updateLayers().catch(() => {}); // エラーは無視 // レイヤー表示を即座に更新
   });
 }
 
@@ -298,7 +451,7 @@ function setupIndividualStoneSelects() {
       select.addEventListener('change', (e) => {
         stoneManager.state.stonesAT[letter] = e.target.value;
         updateIndividualStones();
-        updateLayers(); // レイヤー表示を即座に更新
+        updateLayers().catch(() => {}); // エラーは無視 // レイヤー表示を即座に更新
       });
     }
   });
@@ -310,7 +463,7 @@ function setupIndividualStoneSelects() {
       select.addEventListener('change', (e) => {
         stoneManager.state.stonesAd[letter] = e.target.value;
         updateIndividualStones();
-        updateLayers(); // レイヤー表示を即座に更新
+        updateLayers().catch(() => {}); // エラーは無視 // レイヤー表示を即座に更新
       });
     }
   });
@@ -322,7 +475,7 @@ function setupIndividualStoneSelects() {
       select.addEventListener('change', (e) => {
         stoneManager.state.stones16[num] = e.target.value;
         updateIndividualStones();
-        updateLayers(); // レイヤー表示を即座に更新
+        updateLayers().catch(() => {}); // エラーは無視 // レイヤー表示を即座に更新
       });
     }
   });
@@ -600,7 +753,7 @@ function checkCZRestriction() {
     }
     
     // レイヤー表示を更新
-    updateLayers();
+    updateLayers().catch(() => {}); // エラーは無視
     
   } else if (mainStoneValue === 'B') {
     
@@ -662,7 +815,7 @@ function updateIndividualStones() {
   updateStoneVisualization();
   
   // レイヤー表示を更新
-  updateLayers();
+  updateLayers().catch(() => {}); // エラーは無視
 }
 
 // 石の視覚化を更新
@@ -889,7 +1042,7 @@ function update() {
   updateStoneFormVisibility();
   
   // レイヤー表示を更新
-  updateLayers();
+  updateLayers().catch(() => {}); // エラーは無視
 
   const priceEl = $("priceText");
   const skuEl = $("skuText");
@@ -952,7 +1105,7 @@ function init() {
       // 個別石設定を更新
       updateIndividualStones();
       // レイヤー表示を更新
-      updateLayers();
+      updateLayers().catch(() => {}); // エラーは無視
       // 価格計算を更新
       update();
     });
@@ -965,8 +1118,6 @@ function init() {
   setupIndividualStoneSelects();
   setupStonePlaceholderEvents();
 
-  // 初期表示を更新
-  
   // グループ設定の初期状態を設定（チェックボックスがオフなのでグループプルダウンを非表示）
   updateGroupMode('AT', false);
   updateGroupMode('Ad', false);
@@ -978,9 +1129,18 @@ function init() {
   // 石選択フォームの表示制御を実行
   updateStoneFormVisibility();
   
-  updateStoneVisualization();
-  updateLayers();
-  update();
+  // 画像プリロードを開始（非同期）
+  imageCache.preloadCommonImages().then(() => {
+    // プリロード完了後に初期表示を更新
+    updateStoneVisualization();
+    updateLayers().catch(() => {}); // エラーは無視
+    update();
+  }).catch(() => {
+    // プリロードに失敗しても初期表示を更新
+    updateStoneVisualization();
+    updateLayers().catch(() => {}); // エラーは無視
+    update();
+  });
   
   // 確実に背景画像を表示するためのフォールバック
   setTimeout(() => {
@@ -1089,8 +1249,8 @@ function setupMobileScrollPreview() {
   handleScroll();
 }
 
-// レイヤー表示を更新
-function updateLayers() {
+// レイヤー表示を更新（最適化版）
+async function updateLayers() {
   const container = document.getElementById('accessoryLayers');
   if (!container) {
     return;
@@ -1124,15 +1284,33 @@ function updateLayers() {
   // アクティブなレイヤーを取得
   const activeLayers = getActiveLayers(selections);
   
+  // 現在のレイヤーと比較して変更があるかチェック
+  const currentLayerKeys = Array.from(container.children).map(child => {
+    const img = child.querySelector('.layer-image');
+    return img ? img.src : '';
+  }).sort();
+  
+  const newLayerKeys = activeLayers.map(layer => layer.image).sort();
+  
+  // レイヤーが変更されていない場合は何もしない
+  if (JSON.stringify(currentLayerKeys) === JSON.stringify(newLayerKeys)) {
+    return;
+  }
+  
   // コンテナをクリア
   container.innerHTML = '';
   
-  // レイヤー画像を追加（レイヤー番号の小さい順にソート）
-  activeLayers.sort((a, b) => a.layer - b.layer).forEach((layer, index) => {
-    const img = createLayerImage(layer, index);
-    container.appendChild(img);
-  });
+  // レイヤー画像を並列で作成・追加
+  const layerPromises = activeLayers
+    .sort((a, b) => a.layer - b.layer)
+    .map(async (layer, index) => {
+      const img = createLayerImage(layer, index);
+      container.appendChild(img);
+      return img;
+    });
   
+  // すべてのレイヤーが追加されるまで待機
+  await Promise.all(layerPromises);
 }
 
 
