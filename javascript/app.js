@@ -283,7 +283,6 @@ function setupGroupStoneSelects() {
   });
 
   $('groupStone16').addEventListener('change', (e) => {
-    console.log('バチカングループ石選択が変更されました:', e.target.value);
     stoneManager.state.groupStone16 = e.target.value;
     updateIndividualStones();
     updateLayers(); // レイヤー表示を即座に更新
@@ -321,7 +320,6 @@ function setupIndividualStoneSelects() {
     const select = $(`stone16_${num}`);
     if (select) {
       select.addEventListener('change', (e) => {
-        console.log(`バチカン個別石${num}選択が変更されました:`, e.target.value);
         stoneManager.state.stones16[num] = e.target.value;
         updateIndividualStones();
         updateLayers(); // レイヤー表示を即座に更新
@@ -356,7 +354,6 @@ function updateStoneFormVisibility() {
 // 個別石選択のセレクトボックスを更新する関数
 function updateStoneSelectOptions() {
   const mainStoneValue = $('stoneSel') ? $('stoneSel').value : '';
-  console.log('updateStoneSelectOptions呼び出し - mainStoneValue:', mainStoneValue);
   
   // すべての個別石選択を取得
   const allStoneSelects = [
@@ -389,14 +386,12 @@ function updateStoneSelectOptions() {
   
   // CZ以外（天然石 + CZ または 天然石）が選択されている場合
   if (mainStoneValue && mainStoneValue !== 'A') {
-    console.log('天然石選択時 - CZ以外の選択肢のみ表示');
     
     // 個別石選択の更新
     allStoneSelects.forEach(({element, type, position}) => {
       if (element) {
         // 現在の選択値を保存
         const currentValue = element.value;
-        console.log(`個別石選択更新 - ${type}_${position}, 現在の値: ${currentValue}`);
         
         // オプションをクリア
         element.innerHTML = '';
@@ -410,7 +405,6 @@ function updateStoneSelectOptions() {
         // メインストーン選択に応じて選択肢を追加
         if (mainStoneValue === 'B') {
           // 天然石 + CZ選択時はすべての石を表示
-          console.log('天然石 + CZ選択時 - すべての選択肢を追加');
           MASTER_STONES.individualStones.forEach(stone => {
             const option = document.createElement('option');
             option.value = stone.value;
@@ -466,7 +460,6 @@ function updateStoneSelectOptions() {
     });
     
   } else if (mainStoneValue === 'A') {
-    console.log('CZ(A)選択時 - すべての選択肢を表示（個別石選択は無効化）');
     
     // すべての選択肢を表示
     [...allStoneSelects, ...groupSelects].forEach(({element}) => {
@@ -501,7 +494,6 @@ function updateStoneSelectOptions() {
       }
     });
   } else {
-    console.log('未選択時 - すべての選択肢を表示');
     
     // すべての選択肢を表示
     [...allStoneSelects, ...groupSelects].forEach(({element}) => {
@@ -544,7 +536,6 @@ function checkCZRestriction() {
   const mainStoneSelect = $('stoneSel');
   const mainStoneValue = mainStoneSelect ? mainStoneSelect.value : '';
   
-  console.log('メインストーン選択:', mainStoneValue);
   
   // すべての個別石選択を取得
   const allStoneSelects = [
@@ -576,7 +567,6 @@ function checkCZRestriction() {
   
   // CZ(A)が選択されている場合
   if (mainStoneValue === 'A') {
-    console.log('CZ(A)が選択されています - すべての石をCZに一括設定');
     
     // すべての個別石選択をCZに設定
     allStoneSelects.forEach(({element, type, position}) => {
@@ -613,7 +603,6 @@ function checkCZRestriction() {
     updateLayers();
     
   } else if (mainStoneValue === 'B') {
-    console.log('天然石 + CZが選択されています - すべての石を選択可能');
     
     // すべての個別石選択を有効化
     allStoneSelects.forEach(({element}) => {
@@ -623,7 +612,6 @@ function checkCZRestriction() {
     });
     
   } else {
-    console.log('ストーンが選択されていません - すべての選択を有効化');
     
     // すべての個別石選択を有効化
     allStoneSelects.forEach(({element}) => {
@@ -957,7 +945,6 @@ function init() {
   const stoneSelect = $('stoneSel');
   if (stoneSelect) {
     stoneSelect.addEventListener('change', (e) => {
-      console.log('メインストーン選択が変更されました:', e.target.value);
       // CZ制限チェックを実行
       checkCZRestriction();
       // 個別石選択のオプションを更新
