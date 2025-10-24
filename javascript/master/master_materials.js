@@ -44,6 +44,5 @@ const MASTER_MATERIALS = {
   stones: [
     { value: "A", label: "CZ" },
     { value: "B", label: "CZ + 天然石" },
-    { value: "C", label: "天然石" },
   ]
 };
