@@ -1024,5 +1024,3 @@ const PRICE_TABLE = {
   "879B": { price: 440000, sku: "879B" },
   "889B": { price: 435000, sku: "889B" }
 };
-
-export default PRICE_TABLE;

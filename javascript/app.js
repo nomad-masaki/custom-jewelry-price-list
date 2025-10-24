@@ -914,7 +914,8 @@ function update() {
     return;
   }
 
-  const rec = PRICE_TABLE[keyOf(b,k,c,s)];
+  const key = keyOf(b,k,c,s);
+  const rec = PRICE_TABLE[key];
   if (!rec) {
     priceEl.textContent = "価格未登録";
     if (skuEl) skuEl.textContent = "-";
@@ -922,8 +923,22 @@ function update() {
     return;
   }
 
-  priceEl.textContent = fmtJPY(rec.price);
-  if (skuEl) skuEl.textContent = rec.sku || keyOf(b,k,c,s);
+  // 価格表示（数値チェック付き）
+  if (typeof rec.price === 'number' && rec.price >= 0) {
+    priceEl.textContent = fmtJPY(rec.price);
+  } else {
+    priceEl.textContent = "価格データエラー";
+  }
+
+  // SKU表示（フォールバック付き）
+  if (skuEl) {
+    if (rec.sku && typeof rec.sku === 'string') {
+      skuEl.textContent = rec.sku;
+    } else {
+      skuEl.textContent = key; // キーをフォールバックとして使用
+    }
+  }
+
   if (taxEl) taxEl.textContent = "-";
 }
 
