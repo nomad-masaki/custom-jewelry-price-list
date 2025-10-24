@@ -130,7 +130,8 @@ function getActiveLayers(selections) {
   
   // layer-4: 本体外輪の石レイヤー（A〜T）
   if (selections.stonesAT) {
-    Object.keys(selections.stonesAT).forEach(letter => {
+    // すべての石位置を処理
+    Object.keys(LAYER_MAPPING.stonesAT).forEach(letter => {
       const stoneType = selections.stonesAT[letter];
       if (stoneType && LAYER_MAPPING.stonesAT[letter]) {
         // 石の種類と位置に応じて画像パスを変更（layer-4ディレクトリ）
@@ -139,20 +140,15 @@ function getActiveLayers(selections) {
           image: `images/layer-4/layer_4_mane_${letter}_${stoneType.toLowerCase()}.png`
         };
         activeLayers.push(stoneLayer);
-      } else if (LAYER_MAPPING.stonesAT[letter]) {
-        // 石が選択されていない場合はデフォルト画像を表示
-        const stoneLayer = {
-          ...LAYER_MAPPING.stonesAT[letter],
-          image: `images/layer-4/layer_4_mane_plain.png`
-        };
-        activeLayers.push(stoneLayer);
       }
+      // 石が選択されていない場合は何も追加しない（背景画像のみ表示）
     });
   }
   
   // layer-4: 本体中央の石レイヤー（a〜d）
   if (selections.stonesAd) {
-    Object.keys(selections.stonesAd).forEach(letter => {
+    // すべての石位置を処理
+    Object.keys(LAYER_MAPPING.stonesAd).forEach(letter => {
       const stoneType = selections.stonesAd[letter];
       if (stoneType && LAYER_MAPPING.stonesAd[letter]) {
         // 位置に応じて画像名を決定
@@ -168,12 +164,14 @@ function getActiveLayers(selections) {
         };
         activeLayers.push(stoneLayer);
       }
+      // 石が選択されていない場合は何も追加しない（背景画像のみ表示）
     });
   }
   
   // layer-4: バチカンの石レイヤー（1〜6）
   if (selections.stones16) {
-    Object.keys(selections.stones16).forEach(num => {
+    // すべての石位置を処理
+    Object.keys(LAYER_MAPPING.stones16).forEach(num => {
       const stoneType = selections.stones16[num];
       if (stoneType && LAYER_MAPPING.stones16[num]) {
         const stoneLayer = {
@@ -182,6 +180,7 @@ function getActiveLayers(selections) {
         };
         activeLayers.push(stoneLayer);
       }
+      // 石が選択されていない場合は何も追加しない（背景画像のみ表示）
     });
   }
   

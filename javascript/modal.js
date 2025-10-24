@@ -538,7 +538,7 @@ function setupModalButtons() {
   }
   
   if (resetBtn) {
-    resetBtn.addEventListener('click', resetStoneSettings);
+    resetBtn.addEventListener('click', resetModalStoneSettings);
   }
   
   if (cancelBtn) {
@@ -573,9 +573,12 @@ function saveStoneSettings() {
   hideStoneModal();
 }
 
-// ストーン設定をリセット
-function resetStoneSettings() {
-  // stoneManagerの状態をリセット
+// モーダル内のストーン設定をリセット
+function resetModalStoneSettings() {
+  // モーダル内の個別石選択をすべてクリア
+  clearModalStoneSettings();
+  
+  // モーダル内のstoneManager状態をリセット（プレビュー更新のため）
   stoneManager.state.stonesAT = {};
   stoneManager.state.stonesAd = {};
   stoneManager.state.stones16 = {};
@@ -585,9 +588,6 @@ function resetStoneSettings() {
   stoneManager.state.groupStoneAT = '';
   stoneManager.state.groupStoneAd = '';
   stoneManager.state.groupStone16 = '';
-  
-  // モーダル内の個別石選択をすべてクリア
-  clearModalStoneSettings();
   
   // モーダルのプレビューを更新
   updateModalPreviewFromStones();

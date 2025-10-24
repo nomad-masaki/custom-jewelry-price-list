@@ -95,8 +95,10 @@ class ImageCache {
     const promise = new Promise((resolve, reject) => {
       const img = new Image();
       
-      // ブラウザキャッシュを活用するための設定
-      img.crossOrigin = 'anonymous';
+      // ローカル環境（file://）ではcrossOriginを設定しない
+      if (window.location.protocol !== 'file:') {
+        img.crossOrigin = 'anonymous';
+      }
       
       img.onload = () => {
         // キャッシュサイズ制限
@@ -131,7 +133,11 @@ class ImageCache {
   async preloadImages(srcs) {
     const promises = srcs.map(src => 
       this.preloadImage(src).catch(error => {
-        // エラーをコンソールに出力せずに無視
+        // ローカル環境ではCORSエラーが発生するため、エラーを無視
+        if (window.location.protocol === 'file:') {
+          return null;
+        }
+        // 本番環境ではエラーをコンソールに出力せずに無視
         return null;
       })
     );
@@ -150,6 +156,11 @@ class ImageCache {
 
   // よく使用される画像をプリロード
   async preloadCommonImages() {
+    // ローカル環境（file://）ではプリロードをスキップ
+    if (window.location.protocol === 'file:') {
+      return;
+    }
+    
     const commonImages = [
       // 背景画像
       "images/layer_5_Original.png",
@@ -182,6 +193,11 @@ class ImageCache {
 
   // 全画像を事前プリロード（より包括的なキャッシュ）
   async preloadAllImages() {
+    // ローカル環境（file://）ではプリロードをスキップ
+    if (window.location.protocol === 'file:') {
+      return;
+    }
+    
     const allImages = [];
     
     // 本体素材画像を追加
@@ -1445,7 +1461,7 @@ function resetAllSettings() {
   resetAllSelects();
   
   // 2. 石設定をリセット
-  resetStoneSettings();
+  resetGlobalStoneSettings();
   
   // 3. 選択中のキーのバッチ表示をクリア
   clearBadges();
@@ -1522,8 +1538,8 @@ function clearIndividualStoneSelects() {
   });
 }
 
-// 石設定をリセット
-function resetStoneSettings() {
+// グローバル石設定をリセット
+function resetGlobalStoneSettings() {
   // stoneManagerの状態をリセット
   stoneManager.state.stonesAT = {};
   stoneManager.state.stonesAd = {};
