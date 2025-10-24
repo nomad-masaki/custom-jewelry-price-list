@@ -1435,6 +1435,158 @@ async function updateLayers() {
 }
 
 
+// ============================================================================
+// グローバルリセット関数
+// ============================================================================
+
+// すべての設定をリセットしてデフォルト状態に戻す
+function resetAllSettings() {
+  // 1. すべてのプルダウンを「選択してください」にリセット
+  resetAllSelects();
+  
+  // 2. 石設定をリセット
+  resetStoneSettings();
+  
+  // 3. 選択中のキーのバッチ表示をクリア
+  clearBadges();
+  
+  // 4. プレビュー画像をデフォルト（背景のみ）にリセット
+  resetPreview();
+  
+  // 5. 価格とSKUをリセット
+  resetPriceAndSku();
+}
+
+// すべてのプルダウンをリセット
+function resetAllSelects() {
+  // 本体素材
+  const bodySel = document.getElementById('bodySel');
+  if (bodySel) bodySel.value = '';
+  
+  // チェーン
+  const chainSel = document.getElementById('chainSel');
+  if (chainSel) chainSel.value = '';
+  
+  // バチカン
+  const bailSel = document.getElementById('bailSel');
+  if (bailSel) bailSel.value = '';
+  
+  // ストーン
+  const stoneSel = document.getElementById('stoneSel');
+  if (stoneSel) stoneSel.value = '';
+  
+  // グループ設定のトグルをオフに
+  const groupToggles = [
+    document.getElementById('groupToggleAT'),
+    document.getElementById('groupToggleAd'),
+    document.getElementById('groupToggle16')
+  ];
+  
+  groupToggles.forEach(toggle => {
+    if (toggle) toggle.checked = false;
+  });
+  
+  // グループ石選択をクリア
+  const groupSelects = [
+    document.getElementById('groupStoneAT'),
+    document.getElementById('groupStoneAd'),
+    document.getElementById('groupStone16')
+  ];
+  
+  groupSelects.forEach(select => {
+    if (select) select.value = '';
+  });
+  
+  // 個別石選択をクリア
+  clearIndividualStoneSelects();
+}
+
+// 個別石選択をクリア
+function clearIndividualStoneSelects() {
+  // A〜Tの個別選択
+  'ABCDEFGHIJKLMNOPQRST'.split('').forEach(letter => {
+    const select = document.getElementById(`stoneAT_${letter}`);
+    if (select) select.value = '';
+  });
+  
+  // a〜dの個別選択
+  'abcd'.split('').forEach(letter => {
+    const select = document.getElementById(`stoneAd_${letter}`);
+    if (select) select.value = '';
+  });
+  
+  // 1〜6の個別選択
+  [1,2,3,4,5,6].forEach(num => {
+    const select = document.getElementById(`stone16_${num}`);
+    if (select) select.value = '';
+  });
+}
+
+// 石設定をリセット
+function resetStoneSettings() {
+  // stoneManagerの状態をリセット
+  stoneManager.state.stonesAT = {};
+  stoneManager.state.stonesAd = {};
+  stoneManager.state.stones16 = {};
+  stoneManager.state.groupAT = false;
+  stoneManager.state.groupAd = false;
+  stoneManager.state.group16 = false;
+  stoneManager.state.groupStoneAT = '';
+  stoneManager.state.groupStoneAd = '';
+  stoneManager.state.groupStone16 = '';
+  
+  // グループモードを更新
+  updateGroupMode('AT', false);
+  updateGroupMode('Ad', false);
+  updateGroupMode('16', false);
+}
+
+// 選択中のキーのバッチ表示をクリア
+function clearBadges() {
+  const badgeWrap = document.getElementById('badges');
+  if (badgeWrap) {
+    badgeWrap.innerHTML = '';
+  }
+}
+
+// プレビュー画像をデフォルト（背景のみ）にリセット
+function resetPreview() {
+  const container = document.getElementById('accessoryLayers');
+  if (container) {
+    container.innerHTML = '';
+    
+    // 背景画像のみを表示
+    const backgroundImg = document.createElement('img');
+    backgroundImg.src = 'images/layer_5_Original.png';
+    backgroundImg.alt = 'アクセサリー背景';
+    backgroundImg.className = 'layer-image';
+    backgroundImg.style.zIndex = '5';
+    backgroundImg.style.position = 'absolute';
+    backgroundImg.style.top = '0';
+    backgroundImg.style.left = '0';
+    backgroundImg.style.width = '100%';
+    backgroundImg.style.height = '100%';
+    backgroundImg.style.objectFit = 'contain';
+    backgroundImg.style.opacity = '1.0';
+    
+    container.appendChild(backgroundImg);
+  }
+}
+
+// 価格とSKUをリセット
+function resetPriceAndSku() {
+  const priceEl = document.getElementById('priceText');
+  const skuEl = document.getElementById('skuText');
+  
+  if (priceEl) {
+    priceEl.textContent = 'パーツを選択すると金額が表示されます';
+  }
+  
+  if (skuEl) {
+    skuEl.textContent = '-';
+  }
+}
+
 document.addEventListener("DOMContentLoaded", function() {
   init();
 });
