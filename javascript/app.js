@@ -49,6 +49,37 @@ class ImageCache {
     this.cache = new Map();
     this.loadingPromises = new Map();
     this.preloadedImages = new Set();
+    this.cacheKey = 'imageCache_v1';
+    this.maxCacheSize = 200; // 最大キャッシュサイズ
+    this.loadCacheFromStorage();
+  }
+
+  // キャッシュをローカルストレージから読み込み
+  loadCacheFromStorage() {
+    try {
+      const cachedData = localStorage.getItem(this.cacheKey);
+      if (cachedData) {
+        const parsed = JSON.parse(cachedData);
+        if (parsed && parsed.preloadedImages) {
+          this.preloadedImages = new Set(parsed.preloadedImages);
+        }
+      }
+    } catch (error) {
+      // ローカルストレージの読み込みに失敗した場合は無視
+    }
+  }
+
+  // キャッシュをローカルストレージに保存
+  saveCacheToStorage() {
+    try {
+      const cacheData = {
+        preloadedImages: Array.from(this.preloadedImages),
+        timestamp: Date.now()
+      };
+      localStorage.setItem(this.cacheKey, JSON.stringify(cacheData));
+    } catch (error) {
+      // ローカルストレージの保存に失敗した場合は無視
+    }
   }
 
   // 画像をプリロード
@@ -63,15 +94,32 @@ class ImageCache {
 
     const promise = new Promise((resolve, reject) => {
       const img = new Image();
+      
+      // ブラウザキャッシュを活用するための設定
+      img.crossOrigin = 'anonymous';
+      
       img.onload = () => {
+        // キャッシュサイズ制限
+        if (this.cache.size >= this.maxCacheSize) {
+          const firstKey = this.cache.keys().next().value;
+          this.cache.delete(firstKey);
+        }
+        
         this.cache.set(src, img);
         this.preloadedImages.add(src);
+        
+        // ローカルストレージにキャッシュ情報を保存
+        this.saveCacheToStorage();
+        
         resolve(img);
       };
+      
       img.onerror = () => {
         this.loadingPromises.delete(src);
         reject(new Error(`Failed to load image: ${src}`));
       };
+      
+      // キャッシュバスティングを避けるため、タイムスタンプを追加しない
       img.src = src;
     });
 
@@ -128,6 +176,58 @@ class ImageCache {
 
     // プリロードを実行（エラーは無視）
     await this.preloadImages(commonImages);
+  }
+
+  // 全画像を事前プリロード（より包括的なキャッシュ）
+  async preloadAllImages() {
+    const allImages = [];
+    
+    // 本体素材画像を追加
+    MASTER_MATERIALS.forEach(material => {
+      if (material.layer3Image) {
+        allImages.push(material.layer3Image);
+      }
+    });
+    
+    // チェーン画像を追加
+    MASTER_MATERIALS.forEach(material => {
+      if (material.layer1Image) {
+        allImages.push(material.layer1Image);
+      }
+    });
+    
+    // バチカン画像を追加
+    MASTER_MATERIALS.forEach(material => {
+      if (material.layer2Image) {
+        allImages.push(material.layer2Image);
+      }
+    });
+    
+    // 石画像を追加
+    MASTER_STONES.individualStones.forEach(stone => {
+      if (stone.layer4Images) {
+        stone.layer4Images.forEach(img => {
+          if (img.image) {
+            allImages.push(img.image);
+          }
+        });
+      }
+    });
+    
+    // 重複を除去
+    const uniqueImages = [...new Set(allImages)];
+    
+    // バッチサイズで分割してプリロード（メモリ使用量を制限）
+    const batchSize = 20;
+    for (let i = 0; i < uniqueImages.length; i += batchSize) {
+      const batch = uniqueImages.slice(i, i + batchSize);
+      await this.preloadImages(batch);
+      
+      // バッチ間に短い遅延を追加（ブラウザの負荷を軽減）
+      if (i + batchSize < uniqueImages.length) {
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+    }
   }
 }
 
@@ -267,11 +367,24 @@ function createLayerImage(layer, index) {
         return;
       }
 
-      // プリロードを試行
-      await imageCache.preloadImage(layer.image);
+      // プリロード済みかチェック
+      if (imageCache.isPreloaded(layer.image)) {
+        img.src = layer.image;
+        return;
+      }
+
+      // プリロードを試行（非同期で実行）
+      imageCache.preloadImage(layer.image).then(() => {
+        img.src = layer.image;
+      }).catch(() => {
+        // プリロードに失敗した場合は直接読み込み
+        img.src = layer.image;
+      });
+      
+      // プリロードを待たずに直接読み込みも実行（フォールバック）
       img.src = layer.image;
     } catch (error) {
-      // プリロードに失敗した場合は直接読み込み
+      // エラーが発生した場合は直接読み込み
       img.src = layer.image;
     }
   };
@@ -1130,11 +1243,17 @@ function init() {
   updateStoneFormVisibility();
   
   // 画像プリロードを開始（非同期）
+  // まず基本的な画像をプリロードして初期表示を更新
   imageCache.preloadCommonImages().then(() => {
     // プリロード完了後に初期表示を更新
     updateStoneVisualization();
     updateLayers().catch(() => {}); // エラーは無視
     update();
+    
+    // バックグラウンドで全画像をプリロード
+    imageCache.preloadAllImages().catch(() => {
+      // 全画像プリロードに失敗してもエラーを出力しない
+    });
   }).catch(() => {
     // プリロードに失敗しても初期表示を更新
     updateStoneVisualization();
