@@ -108,6 +108,9 @@ function initializeModalStoneSettings() {
   
   // 現在の設定をモーダルに反映
   copyCurrentSettingsToModal();
+  
+  // 初期プレビューを更新
+  updateModalPreviewFromStones();
 }
 
 // モーダル内の個別石選択要素を動的に生成
@@ -185,6 +188,15 @@ function setupModalGroupToggles() {
     const toggle = document.getElementById(id);
     if (toggle) {
       toggle.addEventListener('change', (e) => {
+        // stoneManagerの状態を更新
+        if (group === 'AT') {
+          stoneManager.state.groupAT = e.target.checked;
+        } else if (group === 'Ad') {
+          stoneManager.state.groupAd = e.target.checked;
+        } else if (group === '16') {
+          stoneManager.state.group16 = e.target.checked;
+        }
+        
         updateModalGroupMode(group, e.target.checked);
       });
     }
@@ -203,6 +215,15 @@ function setupModalGroupStoneSelects() {
     const select = document.getElementById(id);
     if (select) {
       select.addEventListener('change', (e) => {
+        // stoneManagerの状態を更新
+        if (group === 'AT') {
+          stoneManager.state.groupStoneAT = e.target.value;
+        } else if (group === 'Ad') {
+          stoneManager.state.groupStoneAd = e.target.value;
+        } else if (group === '16') {
+          stoneManager.state.groupStone16 = e.target.value;
+        }
+        
         // モーダル内の個別石選択を更新
         updateModalIndividualStones(group, e.target.value);
       });
@@ -217,6 +238,8 @@ function setupModalIndividualStoneSelects() {
     const select = document.getElementById(`modalStoneAT_${letter}`);
     if (select) {
       select.addEventListener('change', (e) => {
+        // stoneManagerの状態を更新
+        stoneManager.state.stonesAT[letter] = e.target.value;
         // モーダル内のプレビューを更新
         updateModalPreviewFromStones();
       });
@@ -228,6 +251,8 @@ function setupModalIndividualStoneSelects() {
     const select = document.getElementById(`modalStoneAd_${letter}`);
     if (select) {
       select.addEventListener('change', (e) => {
+        // stoneManagerの状態を更新
+        stoneManager.state.stonesAd[letter] = e.target.value;
         updateModalPreviewFromStones();
       });
     }
@@ -238,6 +263,8 @@ function setupModalIndividualStoneSelects() {
     const select = document.getElementById(`modalStone16_${num}`);
     if (select) {
       select.addEventListener('change', (e) => {
+        // stoneManagerの状態を更新
+        stoneManager.state.stones16[num] = e.target.value;
         updateModalPreviewFromStones();
       });
     }
@@ -331,32 +358,35 @@ function updateModalStoneSelectOptions(mainStoneValue) {
 // 現在の設定をモーダルにコピー
 function copyCurrentSettingsToModal() {
   // 現在の個別石設定をモーダルにコピー
-  Object.keys(stoneManager.state.stonesAT || {}).forEach(letter => {
+  // A〜Tの個別選択
+  'ABCDEFGHIJKLMNOPQRST'.split('').forEach(letter => {
     const select = document.getElementById(`modalStoneAT_${letter}`);
     if (select) {
       select.value = stoneManager.state.stonesAT[letter] || '';
     }
   });
   
-  Object.keys(stoneManager.state.stonesAd || {}).forEach(letter => {
+  // a〜dの個別選択
+  'abcd'.split('').forEach(letter => {
     const select = document.getElementById(`modalStoneAd_${letter}`);
     if (select) {
       select.value = stoneManager.state.stonesAd[letter] || '';
     }
   });
   
-  Object.keys(stoneManager.state.stones16 || {}).forEach(num => {
+  // 1〜6の個別選択
+  [1,2,3,4,5,6].forEach(num => {
     const select = document.getElementById(`modalStone16_${num}`);
     if (select) {
       select.value = stoneManager.state.stones16[num] || '';
     }
   });
   
-  // グループ設定をデフォルトでオフに設定
+  // 現在のグループ設定を反映
   const groupToggles = [
-    { id: 'modalGroupToggleAT', state: false },
-    { id: 'modalGroupToggleAd', state: false },
-    { id: 'modalGroupToggle16', state: false }
+    { id: 'modalGroupToggleAT', state: stoneManager.state.groupAT || false },
+    { id: 'modalGroupToggleAd', state: stoneManager.state.groupAd || false },
+    { id: 'modalGroupToggle16', state: stoneManager.state.group16 || false }
   ];
   
   groupToggles.forEach(({ id, state }) => {
@@ -370,9 +400,9 @@ function copyCurrentSettingsToModal() {
   });
   
   const groupSelects = [
-    { id: 'modalGroupStoneAT', value: '' },
-    { id: 'modalGroupStoneAd', value: '' },
-    { id: 'modalGroupStone16', value: '' }
+    { id: 'modalGroupStoneAT', value: stoneManager.state.groupStoneAT || '' },
+    { id: 'modalGroupStoneAd', value: stoneManager.state.groupStoneAd || '' },
+    { id: 'modalGroupStone16', value: stoneManager.state.groupStone16 || '' }
   ];
   
   groupSelects.forEach(({ id, value }) => {
@@ -415,6 +445,8 @@ function updateModalIndividualStones(group, value) {
       if (select) {
         select.value = value;
       }
+      // stoneManagerの状態も更新
+      stoneManager.state.stonesAT[letter] = value;
     });
   } else if (group === 'Ad') {
     'abcd'.split('').forEach(letter => {
@@ -422,6 +454,8 @@ function updateModalIndividualStones(group, value) {
       if (select) {
         select.value = value;
       }
+      // stoneManagerの状態も更新
+      stoneManager.state.stonesAd[letter] = value;
     });
   } else if (group === '16') {
     [1,2,3,4,5,6].forEach(num => {
@@ -429,6 +463,8 @@ function updateModalIndividualStones(group, value) {
       if (select) {
         select.value = value;
       }
+      // stoneManagerの状態も更新
+      stoneManager.state.stones16[num] = value;
     });
   }
   
@@ -438,37 +474,6 @@ function updateModalIndividualStones(group, value) {
 
 // モーダル内の石選択からプレビューを更新
 function updateModalPreviewFromStones() {
-  // モーダル内の石選択を取得
-  const modalStones = {
-    stonesAT: {},
-    stonesAd: {},
-    stones16: {}
-  };
-  
-  // A〜Tの個別選択
-  'ABCDEFGHIJKLMNOPQRST'.split('').forEach(letter => {
-    const select = document.getElementById(`modalStoneAT_${letter}`);
-    if (select) {
-      modalStones.stonesAT[letter] = select.value;
-    }
-  });
-  
-  // a〜dの個別選択
-  'abcd'.split('').forEach(letter => {
-    const select = document.getElementById(`modalStoneAd_${letter}`);
-    if (select) {
-      modalStones.stonesAd[letter] = select.value;
-    }
-  });
-  
-  // 1〜6の個別選択
-  [1,2,3,4,5,6].forEach(num => {
-    const select = document.getElementById(`modalStone16_${num}`);
-    if (select) {
-      modalStones.stones16[num] = select.value;
-    }
-  });
-  
   // 現在の選択状態を取得
   const currentSelections = {
     body: $("bodySel") ? $("bodySel").value : '',
@@ -477,11 +482,45 @@ function updateModalPreviewFromStones() {
     stone: $("stoneSel") ? $("stoneSel").value : ''
   };
   
-  // モーダルのレイヤーを更新
-  updateModalLayers({
+  // グループ設定を考慮した石設定を取得
+  const stonesAT = {};
+  const stonesAd = {};
+  const stones16 = {};
+  
+  // グループ設定が有効な場合の処理
+  if (stoneManager.state.groupAT && stoneManager.state.groupStoneAT) {
+    CONSTANTS.STONE_LETTERS.AT.forEach(letter => {
+      stonesAT[letter] = stoneManager.state.groupStoneAT;
+    });
+  } else {
+    Object.assign(stonesAT, stoneManager.state.stonesAT || {});
+  }
+  
+  if (stoneManager.state.groupAd && stoneManager.state.groupStoneAd) {
+    CONSTANTS.STONE_LETTERS.Ad.forEach(letter => {
+      stonesAd[letter] = stoneManager.state.groupStoneAd;
+    });
+  } else {
+    Object.assign(stonesAd, stoneManager.state.stonesAd || {});
+  }
+  
+  if (stoneManager.state.group16 && stoneManager.state.groupStone16) {
+    CONSTANTS.STONE_LETTERS['16'].forEach(num => {
+      stones16[num] = stoneManager.state.groupStone16;
+    });
+  } else {
+    Object.assign(stones16, stoneManager.state.stones16 || {});
+  }
+  
+  const selections = {
     ...currentSelections,
-    ...modalStones
-  });
+    stonesAT,
+    stonesAd,
+    stones16
+  };
+  
+  // モーダルのレイヤーを更新
+  updateModalLayers(selections);
 }
 
 // ============================================================================
@@ -536,6 +575,17 @@ function saveStoneSettings() {
 
 // ストーン設定をリセット
 function resetStoneSettings() {
+  // stoneManagerの状態をリセット
+  stoneManager.state.stonesAT = {};
+  stoneManager.state.stonesAd = {};
+  stoneManager.state.stones16 = {};
+  stoneManager.state.groupAT = false;
+  stoneManager.state.groupAd = false;
+  stoneManager.state.group16 = false;
+  stoneManager.state.groupStoneAT = '';
+  stoneManager.state.groupStoneAd = '';
+  stoneManager.state.groupStone16 = '';
+  
   // モーダル内の個別石選択をすべてクリア
   clearModalStoneSettings();
   
